@@ -12,8 +12,8 @@ Vous pouvez consulter les unités disponibles, les réserver, les libérer et le
 - [x] Créer les entités
 - [x] Créer la base de données & les tables
 - [ ] Mettre en place la stack logicielle avec Docker compose
-- [ ] Rédiger les textes de la page d'accueil & à propos
-- [ ] Afficher les offres commerciales
+- [x] Rédiger les textes de la page d'accueil & à propos
+- [x] Afficher les offres commerciales
 - [ ] Mettre en place la vérification de disponibilité des unités
 - [ ] Mettre en place les commandes (sans paiement)
 - [ ] Gérer les annulations de commandes

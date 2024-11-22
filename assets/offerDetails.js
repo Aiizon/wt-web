@@ -30,3 +30,28 @@ billingTypeSelect.addEventListener('change', e => {
     e.preventDefault();
     updateBillingType();
 });
+
+
+const availableUnits = getUnitAvailability();
+const offerUnitAmount = parseInt(document.querySelector('#unitAmount').getAttribute('data-unit-amount'));
+const rentalUnits = document.querySelector('#rent_quantity_quantity');
+const availableDisplay = document.querySelector('#availableDisplay');
+
+const updateAvailability = () => {
+    const selectedUnitAmount = parseInt(rentalUnits.value) * offerUnitAmount;
+
+    if (selectedUnitAmount <= availableUnits) {
+        availableDisplay.textContent = 'Disponible';
+        availableDisplay.classList.replace('text-danger', 'text-success');
+    } else {
+        availableDisplay.textContent = 'Non disponible';
+        availableDisplay.classList.replace('text-success', 'text-danger');
+    }
+}
+
+updateAvailability();
+
+rentalUnits.addEventListener('change', e => {
+    e.preventDefault();
+    updateAvailability();
+});

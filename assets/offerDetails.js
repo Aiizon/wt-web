@@ -1,3 +1,5 @@
+import getUnitAvailability from "./getUnitAvailability";
+
 const billingTypeSelect = document.querySelector('#billing_type_billingType');
 const billingTypeParameter = document.documentURI.split('?')[1]?.replace('billing=', '');
 let selectedBillingType;

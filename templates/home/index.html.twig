@@ -16,7 +16,7 @@
         <section>
             <h2 class="text-center">Nos offres</h2>
             <div class="d-flex justify-content-evenly flex-row">
-                {{ form(billingTypeform) }}
+                {{ form(billingTypeForm) }}
                 <div class="d-flex justify-content-between flex-column">
                     <div>Nom</div>
                     <div>Nombre d'unités</div>
@@ -43,35 +43,5 @@
 
 {% block javascripts %}
     {{ parent() }}
-    <script>
-        const billingTypeForm = document.querySelector('form[name="billing_type"]');
-        const billingTypeSelect = billingTypeForm.querySelector('select');
-        const offers = document.querySelectorAll('.offer');
-
-        const updateBillingType = () => {
-            const selectedBillingType = billingTypeSelect.querySelector('option:checked');
-            const months = selectedBillingType.innerText;
-            const discount = selectedBillingType.getAttribute('data-discount');
-            offers.forEach(offer => {
-                const billingTypeInput = offer.querySelector('.billingType');
-                const totalPriceDisplay = offer.querySelector('.totalPriceDisplay');
-                const monthlyRentPrice = parseInt(offer.querySelector('.monthlyPriceDisplay').getAttribute('data-rent'));
-
-                billingTypeInput.value = selectedBillingType.value;
-
-                if (!Number.isInteger(parseInt(months))) {
-                    totalPriceDisplay.textContent = `${monthlyRentPrice}€`;
-                    return;
-                }
-                totalPriceDisplay.textContent = `${Math.round((monthlyRentPrice * months) * (1 + discount / 100))}€`;
-            });
-        };
-
-        updateBillingType();
-
-        billingTypeSelect.addEventListener('change', e => {
-            e.preventDefault();
-            updateBillingType();
-        });
-    </script>
+    {{ encore_entry_script_tags('homeBillingTypeForm') }}
 {% endblock %}

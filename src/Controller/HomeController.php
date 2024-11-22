@@ -32,11 +32,10 @@ class HomeController extends AbstractController
         $billingTypes    = $this->billingTypeRepository->findAll();
         $billingTypeForm = $this->createForm(BillingTypeType::class);
 
-
         return $this->render('home/index.html.twig', [
             'offers'          => $offers,
             'billingTypes'    => $billingTypes,
-            'billingTypeform' => $billingTypeForm,
+            'billingTypeForm' => $billingTypeForm,
         ]);
     }
 }

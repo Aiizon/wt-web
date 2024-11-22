@@ -6,26 +6,29 @@ use App\Form\BillingTypeType;
 use App\Form\RentQuantityType;
 use App\Repository\BillingTypeRepository;
 use App\Repository\OfferRepository;
-use Doctrine\DBAL\Types\IntegerType;
+use App\Repository\UnitRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Validator\Constraints\Positive;
 
 class OfferController extends AbstractController
 {
     private OfferRepository       $offerRepository;
     private BillingTypeRepository $billingTypeRepository;
+    private UnitRepository        $unitRepository;
 
     public function __construct
     (
         OfferRepository       $offerRepository,
-        BillingTypeRepository $billingTypeRepository
+        BillingTypeRepository $billingTypeRepository,
+        UnitRepository        $unitRepository
     )
     {
         $this->offerRepository       = $offerRepository;
         $this->billingTypeRepository = $billingTypeRepository;
+        $this->unitRepository        = $unitRepository;
     }
 
     #[Route('/offer/{id}', name: 'offer', requirements: ['id' => '\d+'])]
@@ -58,5 +61,13 @@ class OfferController extends AbstractController
             'billingTypeForm'  => $billingTypeForm,
             'rentQuantityForm' => $rentQuantityForm,
         ]);
+    }
+
+    #[Route('/api/units/available', name: 'api_units_available')]
+    public function getAvailableUnits(): JsonResponse
+    {
+        $availableUnits = $this->unitRepository->getAvailableUnitCount();
+
+        return $this->json(['availableUnits' => $availableUnits]);
     }
 }

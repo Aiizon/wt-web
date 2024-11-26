@@ -1,0 +1,48 @@
+import: 
+  - recipe/symfony.php
+  - contrib/yarn.php
+
+config:
+  application: 'wt-web'
+  repository: 'git@github.com:Aiizon/wt-web.git'
+  keep_releases: 3
+
+hosts:
+  10.192.59.3:
+    remote_user: ssh_user
+    user: aizon
+    deploy_path: '/var/www/wt'
+    writable_mode: 'chmod'
+    writable_dirs: ['var/cache', 'var/logs']
+    composer_options: '--no-dev --no-interaction --optimize-autoloader --no-progress --optimize-autoloader --prefer-dist --verbose'
+    port: 22
+    identity_file: '/home/aizon/.ssh/id_ed25519'
+    branch: 'main'
+    env:
+      APP_ENV: 'prod'
+      APP_DEBUG: '0'
+
+tasks:
+  deploy:upload_assets:
+    - run: "mkdir -p {{release_path}}/public/build"
+    - upload:
+       src: './public/build'
+       dest: '{{release_path}}/public'
+  
+  deploy:build:
+    - runLocally: 'yarn'
+    - runLocally: 'yarn build'
+  
+  deploy:change_ownership:
+    - run: 'chown -R ssh_user:www-data {{release_path}}'
+  
+  deploy:migrate:
+    - run: 'php {{release_path}}/bin/console do:mi:mi --no-interaction'
+
+
+after:
+  deploy:failed: 'deploy:unlock'
+  deploy:vendors: 'deploy:build'
+  deploy:build: 'deploy:upload_assets'
+  deploy:upload_assets: 'deploy:change_ownership'
+  deploy:change_ownership: 'deploy:migrate'

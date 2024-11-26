@@ -10,17 +10,23 @@ if (billingTypeParameter) {
     selectedBillingType = billingTypeSelect.querySelector('option:checked');
 }
 
+const totalPriceDisplay = document.querySelector('.totalPriceDisplay');
+const monthlyRentPrice = parseInt(document.querySelector('.monthlyPriceDisplay').getAttribute('data-rent'));
+const billingTypeInput = document.querySelector('.billingType');
+const rentQuantityInput = document.querySelector('.rentQuantity');
+
 const updateBillingType = () => {
     selectedBillingType = billingTypeSelect.querySelector('option:checked');
-    const months = selectedBillingType.innerText;
+    const months = selectedBillingType.value;
     const discount = selectedBillingType.getAttribute('data-discount');
-    const totalPriceDisplay = document.querySelector('.totalPriceDisplay');
-    const monthlyRentPrice = parseInt(document.querySelector('.monthlyPriceDisplay').getAttribute('data-rent'));
 
     if (!Number.isInteger(parseInt(months))) {
         totalPriceDisplay.textContent = `${monthlyRentPrice}€`;
         return;
     }
+
+    billingTypeInput.value = months;
+
     totalPriceDisplay.textContent = `${Math.round((monthlyRentPrice * months) * (1 + discount / 100))}€`;
 };
 
@@ -34,11 +40,12 @@ billingTypeSelect.addEventListener('change', e => {
 
 const availableUnits = getUnitAvailability();
 const offerUnitAmount = parseInt(document.querySelector('#unitAmount').getAttribute('data-unit-amount'));
-const rentalUnits = document.querySelector('#rent_quantity_quantity');
 const availableDisplay = document.querySelector('#availableDisplay');
+const rentalUnits = document.querySelector('#rent_quantity_quantity');
 
 const updateAvailability = () => {
     const selectedUnitAmount = parseInt(rentalUnits.value) * offerUnitAmount;
+    const quantity = rentalUnits.value;
 
     if (selectedUnitAmount <= availableUnits) {
         availableDisplay.textContent = 'Disponible';
@@ -47,6 +54,8 @@ const updateAvailability = () => {
         availableDisplay.textContent = 'Non disponible';
         availableDisplay.classList.replace('text-success', 'text-danger');
     }
+
+    rentQuantityInput.value = quantity;
 }
 
 updateAvailability();

@@ -17,7 +17,11 @@
             {{ form(billingTypeForm) }}
             <p>Prix pour la période : <span class="totalPriceDisplay">0€</span></p>
             {{ form(rentQuantityForm) }}
-            <button>Commander</button>
+            <form action="{{ path('rent', {'id': offer.id}) }}">
+                <input class="billingType" type="hidden" name="billing" value="">
+                <input class="rentQuantity" type="hidden" name="quantity" value="">
+                <button class="btn btn-primary" type="submit">Commander</button>
+            </form>
             <p id="availableDisplay" class="text-success">Disponible</p>
         </div>
     </div>

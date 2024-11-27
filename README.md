@@ -18,7 +18,7 @@ Vous pouvez consulter les unités disponibles, les réserver, les libérer et le
 - [ ] Mettre en place les commandes (sans paiement)
 - [ ] Gérer les annulations de commandes
 - [ ] Gérer la génération de factures par PDF
-- [ ] Gérer l'authentification & les rôles
+- [x] Gérer l'authentification & les rôles
 - [ ] Créer l'espace client (avec gestion des données personnelles)
 - [ ] Mettre en place la gestion des unités, leur statut, leur prix, etc.
 - [ ] Mettre en place l'affichage de l'état des unités en temps réel

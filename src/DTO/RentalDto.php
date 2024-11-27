@@ -6,7 +6,7 @@ use App\Entity\BillingType;
 use App\Entity\Customer;
 use App\Entity\Discount;
 use App\Entity\Offer;
-class RentDTO
+class RentalDto
 {
     public Offer $offer;
     public Customer $customer;

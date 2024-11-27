@@ -2,16 +2,20 @@
 
 namespace App\Controller;
 
-use App\DTO\RentDTO;
+use App\DTO\RentalDto;
 use App\Entity\BillingType;
 use App\Entity\Offer;
+use App\Entity\Rental;
 use App\Form\BillingTypeType;
 use App\Form\RentQuantityType;
 use App\Form\RentType;
+use App\Handler\CustomerDataEditionHandler;
+use App\Handler\RentalCreationHandler;
 use App\Repository\BillingTypeRepository;
 use App\Repository\DiscountRepository;
 use App\Repository\OfferRepository;
 use App\Repository\UnitRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,20 +24,26 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class OfferController extends AbstractController
 {
-    private OfferRepository       $offerRepository;
-    private BillingTypeRepository $billingTypeRepository;
-    private UnitRepository        $unitRepository;
+    private OfferRepository            $offerRepository;
+    private BillingTypeRepository      $billingTypeRepository;
+    private UnitRepository             $unitRepository;
+    private CustomerDataEditionHandler $customerDataEditionHandler;
+    private RentalCreationHandler      $rentalCreationHandler;
 
     public function __construct
     (
-        OfferRepository       $offerRepository,
-        BillingTypeRepository $billingTypeRepository,
-        UnitRepository        $unitRepository
+        OfferRepository            $offerRepository,
+        BillingTypeRepository      $billingTypeRepository,
+        UnitRepository             $unitRepository,
+        CustomerDataEditionHandler $customerDataEditionHandler,
+        RentalCreationHandler      $rentalCreationHandler
     )
     {
-        $this->offerRepository       = $offerRepository;
-        $this->billingTypeRepository = $billingTypeRepository;
-        $this->unitRepository        = $unitRepository;
+        $this->offerRepository            = $offerRepository;
+        $this->billingTypeRepository      = $billingTypeRepository;
+        $this->unitRepository             = $unitRepository;
+        $this->customerDataEditionHandler = $customerDataEditionHandler;
+        $this->rentalCreationHandler      = $rentalCreationHandler;
     }
 
     #[Route('/offer/{id}', name: 'offer', requirements: ['id' => '\d+'])]
@@ -70,7 +80,7 @@ class OfferController extends AbstractController
             $quantity = 1;
         }
 
-        $rentDto = RentDTO::create(
+        $rentalDto = RentalDto::create(
             $offer,
             $customer,
             $billingType,
@@ -81,7 +91,21 @@ class OfferController extends AbstractController
             $customer->getLastName(),
             $customer->getAddress()
         );
-        $rentForm = $this->createForm(RentType::class, $rentDto);
+        $rentForm = $this->createForm(RentType::class, $rentalDto);
+        $rentForm->handleRequest($request);
+
+        if ($rentForm->isSubmitted() && $rentForm->isValid()) {
+            if (($rentalDto->offer->getMaxUnits() * $rentalDto->quantity) > $this->unitRepository->getAvailableUnitCount()) {
+                $this->addFlash('danger', 'Il n\'y a pas assez d\'unités disponibles.');
+                return $this->redirectToRoute('rent', ['id' => $id, 'billing' => $billingType->getId(), 'quantity' => $quantity]);
+            }
+
+            $this->customerDataEditionHandler->handle($rentalDto);
+            $this->rentalCreationHandler->handle($rentalDto);
+
+            $this->addFlash('success', 'La location a bien été enregistrée.');
+            return $this->redirectToRoute('offer', ['id' => $id]);
+        }
 
         return $this->render('offer/rent.html.twig', [
             'offer'       => $offer,

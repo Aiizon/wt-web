@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\DTO\RentDTO;
+use App\DTO\RentalDto;
 use App\Entity\BillingType;
 use App\Validator\Constraints\ValidDiscount;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -78,6 +78,7 @@ class RentType extends AbstractType
             ])
             ->add('discount', TextType::class, [
                 'label' => 'Code promotionnel',
+                'required' => false,
                 'attr' => [
                     'class' => 'form-control',
                 ],
@@ -97,7 +98,7 @@ class RentType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => RentDTO::class,
+            'data_class' => RentalDto::class,
         ]);
     }
 }

@@ -1,7 +1,18 @@
-import getUnitAvailability from "./getUnitAvailability";
+import updateBillingType from "./updateBillingType";
+import updateAvailability from "./updateAvailability";
 
 const billingTypeSelect = document.querySelector('#billing_type_billingType');
-const billingTypeParameter = document.documentURI.split('?')[1]?.replace('billing=', '');
+const unitPriceDisplay = document.querySelector('.unitPriceDisplay');
+const totalPriceDisplay = document.querySelector('.totalPriceDisplay');
+const monthlyRentPrice = parseInt(document.querySelector('.monthlyPriceDisplay').getAttribute('data-rent'));
+const billingTypeInput = document.querySelector('.billingType');
+const rentQuantityInput = document.querySelector('.rentQuantity');
+const rentalUnits = document.querySelector('#rent_quantity_quantity');
+const offerUnitAmount = parseInt(document.querySelector('#unitAmount').getAttribute('data-unit-amount'));
+const availableDisplay = document.querySelector('#availableDisplay');
+const submitButton = document.querySelector('button[type="submit"]');
+
+const billingTypeParameter = new URLSearchParams(window.location.search).get('billing');
 let selectedBillingType;
 if (billingTypeParameter) {
     selectedBillingType = billingTypeSelect.querySelector(`option[value="${billingTypeParameter}"]`);
@@ -10,48 +21,17 @@ if (billingTypeParameter) {
     selectedBillingType = billingTypeSelect.querySelector('option:checked');
 }
 
-const updateBillingType = () => {
-    selectedBillingType = billingTypeSelect.querySelector('option:checked');
-    const months = selectedBillingType.innerText;
-    const discount = selectedBillingType.getAttribute('data-discount');
-    const totalPriceDisplay = document.querySelector('.totalPriceDisplay');
-    const monthlyRentPrice = parseInt(document.querySelector('.monthlyPriceDisplay').getAttribute('data-rent'));
-
-    if (!Number.isInteger(parseInt(months))) {
-        totalPriceDisplay.textContent = `${monthlyRentPrice}€`;
-        return;
-    }
-    totalPriceDisplay.textContent = `${Math.round((monthlyRentPrice * months) * (1 + discount / 100))}€`;
-};
-
-updateBillingType();
+updateBillingType(selectedBillingType, billingTypeSelect, unitPriceDisplay, totalPriceDisplay, rentalUnits, monthlyRentPrice, billingTypeInput);
 
 billingTypeSelect.addEventListener('change', e => {
     e.preventDefault();
-    updateBillingType();
+    updateBillingType(selectedBillingType, billingTypeSelect, unitPriceDisplay, totalPriceDisplay, rentalUnits, monthlyRentPrice, billingTypeInput);
 });
 
-
-const availableUnits = getUnitAvailability();
-const offerUnitAmount = parseInt(document.querySelector('#unitAmount').getAttribute('data-unit-amount'));
-const rentalUnits = document.querySelector('#rent_quantity_quantity');
-const availableDisplay = document.querySelector('#availableDisplay');
-
-const updateAvailability = () => {
-    const selectedUnitAmount = parseInt(rentalUnits.value) * offerUnitAmount;
-
-    if (selectedUnitAmount <= availableUnits) {
-        availableDisplay.textContent = 'Disponible';
-        availableDisplay.classList.replace('text-danger', 'text-success');
-    } else {
-        availableDisplay.textContent = 'Non disponible';
-        availableDisplay.classList.replace('text-success', 'text-danger');
-    }
-}
-
-updateAvailability();
+updateAvailability(rentalUnits, offerUnitAmount, rentQuantityInput, availableDisplay, submitButton);
 
 rentalUnits.addEventListener('change', e => {
     e.preventDefault();
-    updateAvailability();
+    updateBillingType(selectedBillingType, billingTypeSelect, unitPriceDisplay, totalPriceDisplay, rentalUnits, monthlyRentPrice, billingTypeInput);
+    updateAvailability(rentalUnits, offerUnitAmount, rentQuantityInput, availableDisplay, submitButton);
 });

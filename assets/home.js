@@ -1,4 +1,3 @@
-const home = document.querySelector('form[name="billing_type"]');
 const billingTypeSelect = document.querySelector('select');
 const offers = document.querySelectorAll('.offer');
 

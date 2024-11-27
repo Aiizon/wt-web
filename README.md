@@ -15,7 +15,7 @@ Vous pouvez consulter les unités disponibles, les réserver, les libérer et le
 - [x] Rédiger les textes de la page d'accueil & à propos
 - [x] Afficher les offres commerciales
 - [x] Mettre en place la vérification de disponibilité des unités
-- [ ] Mettre en place les commandes (sans paiement)
+- [x] Mettre en place les commandes (sans paiement)
 - [ ] Gérer les annulations de commandes
 - [ ] Gérer la génération de factures par PDF
 - [x] Gérer l'authentification & les rôles

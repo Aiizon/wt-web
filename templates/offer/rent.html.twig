@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Réserver l'offre {{ offer.name }}{% endblock %}
+
+{% block body %}
+    <h1 class="text-center">Réserver l'offre {{ offer.name }}</h1>
+    <div class="d-flex flex-row justify-content-evenly align-content-center">
+        <div class="d-flex flex-column justify-content-evenly align-content-center">
+            {{ form_errors(form) }}
+            {{ form_start(form) }}
+                <h2 class="text-center">Informations personnelles</h2>
+                {{ form_row(form.firstName) }}
+                {{ form_row(form.lastName) }}
+                {{ form_row(form.address) }}
+                <h2 class="text-center">Votre commande</h2>
+                {{ form_row(form.billingType) }}
+                {{ form_row(form.quantity) }}
+                {{ form_row(form.doRenew) }}
+                {{ form_row(form.discount) }}
+                {{ form_row(form.submit) }}
+                <p id="availableDisplay" class="text-success">Disponible</p>
+            {{ form_end(form) }}
+        </div>
+        <div class="d-flex p-1 rounded-4 bg-dark"></div>
+        <div class="d-flex flex-column justify-content-evenly align-content-center">
+            <h2 class="text-center">Résumé de votre commande</h2>
+            <p>Nom de l'offre : {{ offer.name }}</p>
+            <p class="unitAmount" data-unit-amount="{{ offer.maxUnits }}">Unités contenues dans l'offre : {{ offer.maxUnits }}</p>
+            <p class="monthlyPriceDisplay" data-rent="{{ offer.monthlyRentPrice }}">Prix mensuel : {{ offer.monthlyRentPrice }} €</p>
+            <p>Prix unitaire : <span class="unitPriceDisplay">0€</span></p>
+            <p>Montant total : <span class="totalPriceDisplay">0€</span></p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('rent') }}
+{% endblock %}

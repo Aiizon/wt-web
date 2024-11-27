@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Customer;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use App\Repository\CustomerRepository;
 use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
@@ -51,8 +53,8 @@ class SecurityController extends AbstractController
     #[Route('/register', name: 'register')]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
     {
-        $user = new User();
-        $form = $this->createForm(RegistrationFormType::class, $user);
+        $customer = new Customer();
+        $form = $this->createForm(RegistrationFormType::class, $customer);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -60,16 +62,16 @@ class SecurityController extends AbstractController
             $plainPassword = $form->get('plainPassword')->getData();
 
             // encode the plain password
-            $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+            $customer->setPassword($userPasswordHasher->hashPassword($customer, $plainPassword));
 
-            $entityManager->persist($user);
+            $entityManager->persist($customer);
             $entityManager->flush();
 
             // generate a signed url and email it to the user
-            $this->emailVerifier->sendEmailConfirmation('verify_email', $user,
+            $this->emailVerifier->sendEmailConfirmation('verify_email', $customer,
                 (new TemplatedEmail())
                     ->from(new Address('noreply@worktogether.fr', 'Automate Work Together'))
-                    ->to((string) $user->getEmail())
+                    ->to((string) $customer->getEmail())
                     ->subject('Please Confirm your Email')
                     ->htmlTemplate('security/confirmation_email.html.twig')
             );
@@ -85,7 +87,7 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/verify/email', name: 'verify_email')]
-    public function verifyUserEmail(Request $request, TranslatorInterface $translator, UserRepository $userRepository): Response
+    public function verifyUserEmail(Request $request, TranslatorInterface $translator, CustomerRepository $customerRepository): Response
     {
         $id = $request->query->get('id');
 
@@ -93,15 +95,15 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('register');
         }
 
-        $user = $userRepository->find($id);
+        $customer = $customerRepository->find($id);
 
-        if (null === $user) {
+        if (null === $customer) {
             return $this->redirectToRoute('register');
         }
 
         // validate email confirmation link, sets User::isVerified=true and persists
         try {
-            $this->emailVerifier->handleEmailConfirmation($request, $user);
+            $this->emailVerifier->handleEmailConfirmation($request, $customer);
         } catch (VerifyEmailExceptionInterface $exception) {
             $this->addFlash('verify_email_error', $translator->trans($exception->getReason(), [], 'VerifyEmailBundle'));
 

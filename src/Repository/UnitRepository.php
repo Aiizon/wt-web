@@ -39,6 +39,48 @@ class UnitRepository extends ServiceEntityRepository
         return $stmt->executeQuery()->fetchNumeric()[0];
     }
 
+    /**
+     * Gets an array of available units for rental.
+     * @throws Exception
+     */
+    public function getAvailableUnitsForRental(int $quantity)
+    {
+        $query = '
+        SELECT u.id
+        FROM unit u
+        WHERE u.bay_id IN (
+            SELECT u.bay_id
+            FROM unit u
+            WHERE u.id NOT IN (
+                SELECT ru.unit_id
+                FROM rental r
+                INNER JOIN rental_unit ru ON r.id = ru.rental_id
+                WHERE r.rental_end_date is null
+            )
+            GROUP BY u.bay_id
+            HAVING COUNT(u.id) >= :quantity
+        )
+        AND u.id NOT IN (
+            SELECT ru.unit_id
+            FROM rental r
+            INNER JOIN rental_unit ru ON r.id = ru.rental_id
+            WHERE r.rental_end_date is null
+        )
+        AND EXISTS (
+            SELECT 1
+            FROM unit u2
+            WHERE u2.bay_id = u.bay_id
+            AND u2.id = u.id + :quantity - 1
+        )
+        LIMIT ' . $quantity . ';';
+
+        $stmt = $this->getEntityManager()->getConnection()->prepare($query);
+        $stmt->bindValue('quantity', $quantity);
+        $result = $stmt->executeQuery()->fetchAllAssociative();
+
+        return array_map(fn($unit) => $unit['id'], $result);
+    }
+
     //    /**
     //     * @return Unit[] Returns an array of Unit objects
     //     */

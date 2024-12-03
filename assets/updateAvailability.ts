@@ -1,9 +1,16 @@
 import getUnitAvailability from "./getUnitAvailability";
 
-export default async function updateAvailability(rentalUnits, offerUnitAmount, rentQuantityInput, availableDisplay, submitButton) {
-    const availableUnits = await getUnitAvailability();
-    const selectedUnitAmount = parseInt(rentalUnits.value) * offerUnitAmount;
-    const quantity = rentalUnits.value;
+export default async function updateAvailability(
+    rentalUnits:       HTMLInputElement,
+    offerUnitAmount:   number,
+    rentQuantityInput: HTMLInputElement,
+    availableDisplay:  HTMLElement,
+    submitButton:      HTMLButtonElement
+): Promise<void>
+{
+    const availableUnits: number     = await getUnitAvailability();
+    const selectedUnitAmount: number = parseInt(rentalUnits.value) * offerUnitAmount;
+    const quantity: string           = rentalUnits.value;
 
     if (selectedUnitAmount <= availableUnits) {
         availableDisplay.textContent = 'Disponible';

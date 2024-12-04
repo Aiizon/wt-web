@@ -37,6 +37,7 @@ class RentalCreationHandler
             $availableUnits = $this->unitRepository->getAvailableUnitsForRental($rentalDto->quantity);
             for ($j = 0; $j < $rentalDto->offer->getMaxUnits(); $j++) {
                 $rental->addUnit($this->unitRepository->findOneBy(['id' => $availableUnits[$j]]));
+                unset($availableUnits[$j]);
             }
 
             $this->entityManager->persist($rental);

@@ -115,14 +115,6 @@ class OfferController extends AbstractController
         ]);
     }
 
-    #[Route('/api/units/available', name: 'api_units_available')]
-    public function getAvailableUnits(): JsonResponse
-    {
-        $availableUnits = $this->unitRepository->getAvailableUnitCount();
-
-        return $this->json(['availableUnits' => $availableUnits]);
-    }
-
     private function assertOfferValid(Offer $offer): void
     {
         if (!$offer) {

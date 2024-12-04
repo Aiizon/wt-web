@@ -22,14 +22,11 @@ final class Version20241204122900 extends AbstractMigration
         $this->addSql('
             CREATE PROCEDURE GetRentedUnits(OUT count INT)
             BEGIN
-                 SELECT count(u.id) INTO count
-                 FROM unit u
-                 WHERE u.id NOT IN (
-                     SELECT ru.unit_id
-                     FROM rental r
-                         INNER JOIN rental_unit ru ON r.id = ru.rental_id
-                     WHERE r.rental_end_date is null
-                 );
+                SELECT count(u.id) INTO count
+                FROM unit u
+                    INNER JOIN rental_unit ru ON u.id = ru.unit_id
+                    INNER JOIN rental r ON ru.rental_id = r.id
+                WHERE r.rental_end_date IS NULL;
             END'
         );
 
@@ -47,15 +44,16 @@ final class Version20241204122900 extends AbstractMigration
         $this->addSql('
             CREATE PROCEDURE GetRentedUnitsByBay()
             BEGIN
-                SELECT DISTINCT b.id
+                SELECT DISTINCT b.id, COUNT(DISTINCT u.id) AS count
                 FROM bay b
-                         INNER JOIN unit JOIN unit u ON b.id = u.bay_id
-                WHERE u.id NOT IN (
+                    INNER JOIN unit JOIN unit u ON b.id = u.bay_id
+                WHERE u.id IN (
                     SELECT ru.unit_id
                     FROM rental r
-                             INNER JOIN rental_unit ru ON r.id = ru.rental_id
+                        INNER JOIN rental_unit ru ON r.id = ru.rental_id
                     WHERE r.rental_end_date is null
-                );
+                )
+                GROUP BY b.id;
             END'
         );
 

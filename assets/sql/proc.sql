@@ -8,12 +8,9 @@ CREATE PROCEDURE GetRentedUnits(OUT count INT)
 BEGIN
     SELECT count(u.id) INTO count
     FROM unit u
-    WHERE u.id NOT IN (
-        SELECT ru.unit_id
-        FROM rental r
-            INNER JOIN rental_unit ru ON r.id = ru.rental_id
-        WHERE r.rental_end_date is null
-    );
+        INNER JOIN rental_unit ru ON u.id = ru.unit_id
+        INNER JOIN rental r ON ru.rental_id = r.id
+    WHERE r.rental_end_date IS NULL;
 END $$
 DELIMITER ;
 
@@ -42,15 +39,16 @@ DROP PROCEDURE IF EXISTS GetRentedUnitsByBay;
 DELIMITER $$
 CREATE PROCEDURE GetRentedUnitsByBay()
 BEGIN
-    SELECT DISTINCT b.id
+    SELECT DISTINCT b.id, COUNT(DISTINCT u.id) AS count
     FROM bay b
-             INNER JOIN unit JOIN unit u ON b.id = u.bay_id
-    WHERE u.id NOT IN (
+        INNER JOIN unit JOIN unit u ON b.id = u.bay_id
+    WHERE u.id IN (
         SELECT ru.unit_id
         FROM rental r
-                 INNER JOIN rental_unit ru ON r.id = ru.rental_id
+            INNER JOIN rental_unit ru ON r.id = ru.rental_id
         WHERE r.rental_end_date is null
-    );
+    )
+    GROUP BY b.id;
 END $$
 DELIMITER ;
 

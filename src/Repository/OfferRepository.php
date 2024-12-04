@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Offer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -14,6 +15,14 @@ class OfferRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Offer::class);
+    }
+
+    public function getOffersByPopularityProc(): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $conn->prepare('SELECT 1')->executeStatement();
+        return $conn->fetchAllAssociative('CALL GetOffersByPopularity()');
     }
 
     //    /**

@@ -5,7 +5,11 @@ namespace App\Repository;
 use App\Entity\Unit;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\Types\IntegerType;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\ManagerRegistry;
+use PDO;
+use phpDocumentor\Reflection\Types\Integer;
 
 /**
  * @extends ServiceEntityRepository<Unit>
@@ -37,6 +41,22 @@ class UnitRepository extends ServiceEntityRepository
 
         $stmt = $this->getEntityManager()->getConnection()->prepare($query);
         return $stmt->executeQuery()->fetchNumeric()[0];
+    }
+
+    public function getRentedUnits(): int
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $conn->prepare('CALL GetRentedUnits(@count);')->executeStatement();
+        return $conn->fetchNumeric('SELECT @count')[0];
+    }
+
+    public function getRentedUnitsByBayProc(): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $conn->prepare('SELECT 1')->executeStatement();
+        return $conn->fetchAllAssociative('CALL GetRentedUnitsByBay();');
     }
 
     /**

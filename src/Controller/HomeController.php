@@ -37,12 +37,13 @@ class HomeController extends AbstractController
         $billingTypes    = $this->billingTypeRepository->findAll();
         $billingTypeForm = $this->createForm(BillingTypeType::class);
 
-        dd($this->unitRepository->getRentedUnits(), $this->offerRepository->getOffersByPopularityProc(), $this->unitRepository->getRentedUnitsByBayProc());
-
         return $this->render('home/index.html.twig', [
             'offers'          => $offers,
             'billingTypes'    => $billingTypes,
             'billingTypeForm' => $billingTypeForm,
+            'rentedUnits'           => $this->unitRepository->getRentedUnitsProc(),
+            'popOffers'           => $this->offerRepository->getOffersByPopularityProc(),
+            'bayRentedUnits'           => $this->unitRepository->getRentedUnitsByBayProc()
         ]);
     }
 }

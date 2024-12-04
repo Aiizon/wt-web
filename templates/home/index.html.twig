@@ -38,6 +38,22 @@
                 {% endfor %}
             </div>
         </section>
+        <p>unités louées : {{ rentedUnits }}</p>
+        <br>
+        <div>
+            offres par popularité
+            {% for offer in popOffers %}
+                <p>offre {{ offer['id'] }} - {{ offer['count'] }} locations</p>
+            {% endfor %}
+        </div>
+        <br>
+        <div>
+            baies avec locations
+            {% for bay in bayRentedUnits %}
+                <p>baie {{ bay['id'] }} - {{ bay['count'] }} locations</p>
+            {% endfor %}
+
+        </div>
     </main>
 {% endblock %}
 

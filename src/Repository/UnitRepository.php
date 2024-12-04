@@ -43,7 +43,7 @@ class UnitRepository extends ServiceEntityRepository
         return $stmt->executeQuery()->fetchNumeric()[0];
     }
 
-    public function getRentedUnits(): int
+    public function getRentedUnitsProc(): int
     {
         $conn = $this->getEntityManager()->getConnection();
 

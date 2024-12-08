@@ -104,6 +104,7 @@ class OfferController extends AbstractController
             $this->rentalCreationHandler->handle($rentalDto);
 
             $this->addFlash('success', 'La location a bien été enregistrée.');
+            // @todo: redirect to 'my rentals' page
             return $this->redirectToRoute('offer', ['id' => $id]);
         }
 
@@ -113,14 +114,6 @@ class OfferController extends AbstractController
             'quantity'    => $quantity,
             'form'        => $rentForm,
         ]);
-    }
-
-    #[Route('/api/units/available', name: 'api_units_available')]
-    public function getAvailableUnits(): JsonResponse
-    {
-        $availableUnits = $this->unitRepository->getAvailableUnitCount();
-
-        return $this->json(['availableUnits' => $availableUnits]);
     }
 
     private function assertOfferValid(Offer $offer): void

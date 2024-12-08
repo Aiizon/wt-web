@@ -104,6 +104,7 @@ class OfferController extends AbstractController
             $this->rentalCreationHandler->handle($rentalDto);
 
             $this->addFlash('success', 'La location a bien été enregistrée.');
+            // @todo: redirect to 'my rentals' page
             return $this->redirectToRoute('offer', ['id' => $id]);
         }
 

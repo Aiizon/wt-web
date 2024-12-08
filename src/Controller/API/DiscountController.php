@@ -8,6 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
+use function Deployer\parse;
 
 #[Route('/api')]
 class DiscountController extends AbstractController
@@ -22,7 +23,7 @@ class DiscountController extends AbstractController
     #[Route('/discount/valid', name: 'api_discount_valid', methods: ['POST'])]
     public function isValid(Request $request): JsonResponse
     {
-        $code = $request->query->get('code');
+        $code = json_decode($request->getContent())->code ?? null;
 
         if ($code === null) {
             throw new InvalidArgumentException('Code is required.');

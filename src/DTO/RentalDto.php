@@ -8,15 +8,15 @@ use App\Entity\Discount;
 use App\Entity\Offer;
 class RentalDto
 {
-    public Offer $offer;
-    public Customer $customer;
+    public Offer       $offer;
+    public Customer    $customer;
     public BillingType $billingType;
-    public ?Discount $discount;
-    public int $quantity;
-    public bool $doRenew;
-    public ?string $firstName;
-    public ?string $lastName;
-    public ?string $address;
+    public ?string     $discount;
+    public int         $quantity;
+    public bool        $doRenew;
+    public ?string     $firstName;
+    public ?string     $lastName;
+    public ?string     $address;
 
     public static function create
     (

@@ -72,7 +72,7 @@ class SecurityController extends AbstractController
                 (new TemplatedEmail())
                     ->from(new Address('noreply@worktogether.fr', 'Automate Work Together'))
                     ->to((string) $customer->getEmail())
-                    ->subject('Please Confirm your Email')
+                    ->subject('Veuillez confirmer votre e-mail')
                     ->htmlTemplate('security/confirmation_email.html.twig')
             );
 

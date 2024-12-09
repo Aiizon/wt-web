@@ -26,7 +26,7 @@ class DiscountController extends AbstractController
         $code = json_decode($request->getContent())->code ?? null;
 
         if ($code === null) {
-            throw new InvalidArgumentException('Code is required.');
+            throw new InvalidArgumentException('Un code est requis dans le corps de la requête.');
         }
 
         $discountCode = $this->discountRepository->findOneBy(['code' => $code, 'isActive' => true]);

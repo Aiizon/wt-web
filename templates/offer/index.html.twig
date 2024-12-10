@@ -41,8 +41,17 @@
             <div class="d-flex flex-col flex-wrap justify-content-evenly">
                 {% for feedback in feedbacks %}
                     <div class="card" style="min-width: 15%">
-                        <div class="card-header">
+                        <div class="d-flex flex-row flex-nowrap justify-content-evenly align-items-center gap-2 card-header">
                             <p class="fw-bold text-center">{{ feedback.title }}</p>
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <a href="{{ path('toggle_feedback', {'offerId': offer.id, 'feedbackId': feedback.id}) }}" class="btn btn-dark text-white">
+                                    {% if feedback.isVisible %}
+                                        <i class="bi bi-eye-slash"></i>
+                                    {% else %}
+                                        <i class="bi bi-eye-fill"></i>
+                                    {% endif %}
+                                </a>
+                            {% endif %}
                         </div>
                         <p class="text-center">{{ feedback.content }}</p>
                     </div>

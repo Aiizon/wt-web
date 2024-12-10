@@ -16,6 +16,8 @@ use App\Repository\BillingTypeRepository;
 use App\Repository\OfferRepository;
 use App\Repository\UnitRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -63,7 +65,11 @@ class OfferController extends AbstractController
         $billingTypeForm  = $this->createForm(BillingTypeType::class);
         $rentQuantityForm = $this->createForm(RentQuantityType::class);
 
-        $feedbacks = $this->documentManager->getRepository(Feedback::class)->findBy(['offerId' => $offer->getId(), 'isVisible' => true]);
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $feedbacks = $this->documentManager->getRepository(Feedback::class)->findBy(['offerId' => $offer->getId()]);
+        } else {
+            $feedbacks = $this->documentManager->getRepository(Feedback::class)->findBy(['offerId' => $offer->getId(), 'isVisible' => true]);
+        }
 
         if ($this->getUser()) {
             $newFeedback = new Feedback();
@@ -95,6 +101,30 @@ class OfferController extends AbstractController
             'feedbacks'        => $feedbacks,
             'feedbackForm'     => $feedbackForm ?? null,
         ]);
+    }
+
+    /**
+     * @throws MappingException
+     * @throws MongoDBException
+     * @throws LockException
+     */
+    #[Route('/offer/{offerId}/feedback/{feedbackId}/toggle', name: 'toggle_feedback', requirements: ['id' => '\d+', 'feedbackId' => '^[0-9a-fA-F]{24}$'])]
+    public function toggleFeedback(string $feedbackId): Response
+    {
+        if (!$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $feedback = $this->documentManager->getRepository(Feedback::class)->find($feedbackId);
+        if (!$feedback) {
+            throw $this->createNotFoundException('Le commentaire n\'existe pas.');
+        }
+
+        $feedback->isVisible = !$feedback->isVisible;
+        $this->documentManager->flush();
+
+        $this->addFlash('success', 'Le commentaire a bien été caché.');
+        return $this->redirectToRoute('offer', ['id' => $feedback->offerId]);
     }
 
     #[Route('/offer/{id}/rent', name: 'rent', requirements: ['id' => '\d+'])]

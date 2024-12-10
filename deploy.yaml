@@ -39,6 +39,8 @@ tasks:
   deploy:migrate:
     - run: 'php {{release_path}}/bin/console do:mi:mi --no-interaction'
 
+  deploy:docker:build:
+    - run: 'sudo -u ssh_user docker compose --file={{release_path}}/compose.yaml up -d'
 
 after:
   deploy:failed: 'deploy:unlock'
@@ -46,3 +48,4 @@ after:
   deploy:build: 'deploy:upload_assets'
   deploy:upload_assets: 'deploy:change_ownership'
   deploy:change_ownership: 'deploy:migrate'
+  deploy:migrate: 'deploy:docker:build'

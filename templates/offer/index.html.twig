@@ -26,6 +26,30 @@
             </form>
         </div>
     </div>
+    <section class="d-flex flex-column justify-content-evenly">
+        <h2 class="text-center">Ce que disent nos clients</h2>
+        {% if feedbackForm %}
+            {{ form_errors(feedbackForm) }}
+            {{ form_start(feedbackForm, {}) }}
+                {{ form_row(feedbackForm.title) }}
+                {{ form_row(feedbackForm.content) }}
+                {{ form_row(feedbackForm.submit) }}
+            {{ form_end(feedbackForm) }}
+        {% endif %}
+        <hr>
+        <div class="d-flex flex-column justify-content-evenly">
+            <div class="d-flex flex-col flex-wrap justify-content-evenly">
+                {% for feedback in feedbacks %}
+                    <div class="card" style="min-width: 15%">
+                        <div class="card-header">
+                            <p class="fw-bold text-center">{{ feedback.title }}</p>
+                        </div>
+                        <p class="text-center">{{ feedback.content }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
 {% endblock %}
 
 {% block javascripts %}

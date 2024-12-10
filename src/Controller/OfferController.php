@@ -2,22 +2,22 @@
 
 namespace App\Controller;
 
+use App\Document\Feedback;
 use App\DTO\RentalDto;
 use App\Entity\BillingType;
 use App\Entity\Offer;
-use App\Entity\Rental;
 use App\Form\BillingTypeType;
+use App\Form\FeedbackType;
 use App\Form\RentQuantityType;
 use App\Form\RentType;
 use App\Handler\CustomerDataEditionHandler;
 use App\Handler\RentalCreationHandler;
 use App\Repository\BillingTypeRepository;
-use App\Repository\DiscountRepository;
 use App\Repository\OfferRepository;
 use App\Repository\UnitRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -29,6 +29,7 @@ class OfferController extends AbstractController
     private UnitRepository             $unitRepository;
     private CustomerDataEditionHandler $customerDataEditionHandler;
     private RentalCreationHandler      $rentalCreationHandler;
+    private DocumentManager            $documentManager;
 
     public function __construct
     (
@@ -36,7 +37,8 @@ class OfferController extends AbstractController
         BillingTypeRepository      $billingTypeRepository,
         UnitRepository             $unitRepository,
         CustomerDataEditionHandler $customerDataEditionHandler,
-        RentalCreationHandler      $rentalCreationHandler
+        RentalCreationHandler      $rentalCreationHandler,
+        DocumentManager            $documentManager
     )
     {
         $this->offerRepository            = $offerRepository;
@@ -44,8 +46,12 @@ class OfferController extends AbstractController
         $this->unitRepository             = $unitRepository;
         $this->customerDataEditionHandler = $customerDataEditionHandler;
         $this->rentalCreationHandler      = $rentalCreationHandler;
+        $this->documentManager            = $documentManager;
     }
 
+    /**
+     * @throws MongoDBException
+     */
     #[Route('/offer/{id}', name: 'offer', requirements: ['id' => '\d+'])]
     public function index(Request $request, int $id): Response
     {
@@ -57,11 +63,37 @@ class OfferController extends AbstractController
         $billingTypeForm  = $this->createForm(BillingTypeType::class);
         $rentQuantityForm = $this->createForm(RentQuantityType::class);
 
+        $feedbacks = $this->documentManager->getRepository(Feedback::class)->findBy(['offerId' => $offer->getId(), 'isVisible' => true]);
+
+        if ($this->getUser()) {
+            $newFeedback = new Feedback();
+
+            $newFeedback->setCustomerIdentifier($this->getUser()->getUserIdentifier());
+            $newFeedback->offerId = $offer->getId();
+
+            $feedbackForm = $this->createForm(FeedbackType::class, $newFeedback, [
+                'attr' => [
+                    'class' => 'd-flex flex-row justify-content-evenly align-items-center',
+                ],
+            ]);
+
+            $feedbackForm->handleRequest($request);
+
+            if ($feedbackForm->isSubmitted() && $feedbackForm->isValid()) {
+                $this->documentManager->persist($newFeedback);
+                $this->documentManager->flush();
+                $this->addFlash('success', 'Le commentaire a bien été enregistré.');
+                return $this->redirectToRoute('offer', ['id' => $id]);
+            }
+        }
+
         return $this->render('offer/index.html.twig', [
             'offer'            => $offer,
             'billingType'      => $billingType,
             'billingTypeForm'  => $billingTypeForm,
             'rentQuantityForm' => $rentQuantityForm,
+            'feedbacks'        => $feedbacks,
+            'feedbackForm'     => $feedbackForm ?? null,
         ]);
     }
 

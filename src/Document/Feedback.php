@@ -4,15 +4,16 @@ namespace App\Document;
 
 use App\Entity\Customer;
 use App\Entity\Offer;
+use App\Repository\CustomerRepository;
+use App\Repository\OfferRepository;
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MongoDB\BSON\ObjectId;
 
 #[ODM\Document(collection: "feedbacks")]
 class Feedback
 {
     #[ODM\Id]
-    private ObjectId $id;
+    private string $id;
 
     #[ODM\Field(type: "string")]
     public string $title;
@@ -20,17 +21,22 @@ class Feedback
     #[ODM\Field(type: "string")]
     public string $content;
 
-    #[ODM\ReferenceOne(targetDocument: Customer::class)]
-    public Customer $customer;
+    #[ODM\Field(type: "string")]
+    public string $customerIdentifier;
 
-    #[ODM\ReferenceOne(targetDocument: Offer::class)]
-    public Offer $offer;
+    private Customer $customer;
+
+    #[ODM\Field(type: "int")]
+    public int $offerId;
+
+    private Offer $offer;
 
     #[ODM\Field(type: "date")]
     public DateTime $createdAt;
 
     #[ODM\Field(type: "boolean")]
     public bool $isVisible = true;
+
 
     public function __construct()
     {
@@ -62,24 +68,42 @@ class Feedback
         $this->content = $content;
     }
 
-    public function getCustomer(): Customer
+    public function getCustomerIdentifier(): string
     {
+        return $this->customerIdentifier;
+    }
+
+    public function getCustomer(CustomerRepository $customerRepository): Customer
+    {
+        if (null === $this->customer) {
+            $this->customer = $customerRepository->findOneBy(["email" => $this->customerIdentifier]);
+        }
+
         return $this->customer;
     }
 
-    public function setCustomer(Customer $customer): void
+    public function setCustomerIdentifier(string $customerIdentifier): void
     {
-        $this->customer = $customer;
+        $this->customerIdentifier = $customerIdentifier;
     }
 
-    public function getOffer(): Offer
+    public function getOfferId(): int
     {
+        return $this->offerId;
+    }
+
+    public function getOffer(OfferRepository $offerRepository): Offer
+    {
+        if (null === $this->offer) {
+            $this->offer = $offerRepository->find($this->offerId);
+        }
+
         return $this->offer;
     }
 
-    public function setOffer(Offer $offer): void
+    public function setOffer(int $offerId): void
     {
-        $this->offer = $offer;
+        $this->offerId = $offerId;
     }
 
     public function getCreatedAt(): DateTime

@@ -9,9 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 #[Route('/me')]
 class CustomerAreaController extends AbstractController
@@ -72,6 +70,17 @@ class CustomerAreaController extends AbstractController
         return $this->render('customer_area/profile_edit.html.twig', [
             'form' => $form->createView(),
         ]);
+    }
+
+    #[Route(path: '/profile/delete', name: 'customer_area_profile_delete')]
+    public function profileDelete(): Response
+    {
+        $customer = $this->getUser();
+        $this->customerRepository->anonymise($this->customerRepository->findOneBy(['email' => $customer->getUserIdentifier()]));
+
+        $this->addFlash('success', 'Votre compte a été supprimé avec succès');
+
+        return $this->redirectToRoute('logout');
     }
 
     #[Route('/orders', name: 'customer_area_orders')]

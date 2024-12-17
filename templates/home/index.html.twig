@@ -5,40 +5,38 @@
 {% block description %}Explorez nos offres d'espace de datacenter pour trouver la plus adaptée à vos besoins.{% endblock %}
 
 {% block body %}
-    <main class="mt-3">
-        <section class="d-flex flex-column justify-content-center">
-            <h1 class="text-center">Bienvenue sur Work Together</h1>
-        </section>
-        <section>
-            <h2 class="text-center">Qui sommes-nous ?</h2>
-            <p class="text-center">Work Together est une plateforme de location d'espaces en datacenter. Nous vous proposons des offres adaptées à vos besoins, que vous soyez une entreprise ou un particulier.</p>
-        </section>
-        <section>
-            <h2 class="text-center">Nos offres</h2>
-            <div class="d-flex justify-content-evenly flex-row">
-                {{ form(billingTypeForm) }}
-                <div class="d-flex justify-content-between flex-column">
-                    <div>Nom</div>
-                    <div>Nombre d'unités</div>
-                    <div>Prix mensuel</div>
-                    <div>Prix pour la période</div>
-                    <div><br>Lien</div>
-                </div>
-                {% for offer in offers %}
-                    <div class="d-flex justify-content-evenly flex-column offer">
-                        <div>{{ offer.name }}</div>
-                        <div>{{ offer.maxUnits }} unités</div>
-                        <div class="monthlyPriceDisplay" data-rent="{{ offer.monthlyRentPrice }}">{{ offer.monthlyRentPrice }}€/mois</div>
-                        <div class="totalPriceDisplay">0€</div>
-                        <form action="{{ path('offer', {'id': offer.id}) }}">
-                            <input class="billingType" type="hidden" name="billing" value="">
-                            <button class="btn btn-primary" type="submit">En savoir plus</button>
-                        </form>
-                    </div>
-                {% endfor %}
+    <section class="d-flex flex-column justify-content-center">
+        <h1 class="text-center">Bienvenue sur Work Together</h1>
+    </section>
+    <section>
+        <h2 class="text-center">Qui sommes-nous ?</h2>
+        <p class="text-center">Work Together est une plateforme de location d'espaces en datacenter. Nous vous proposons des offres adaptées à vos besoins, que vous soyez une entreprise ou un particulier.</p>
+    </section>
+    <section>
+        <h2 class="text-center">Nos offres</h2>
+        <div class="d-flex justify-content-evenly flex-row">
+            {{ form(billingTypeForm) }}
+            <div class="d-flex justify-content-between flex-column">
+                <div>Nom</div>
+                <div>Nombre d'unités</div>
+                <div>Prix mensuel</div>
+                <div>Prix pour la période</div>
+                <div><br>Lien</div>
             </div>
-        </section>
-    </main>
+            {% for offer in offers %}
+                <div class="d-flex justify-content-evenly flex-column offer">
+                    <div>{{ offer.name }}</div>
+                    <div>{{ offer.maxUnits }} unités</div>
+                    <div class="monthlyPriceDisplay" data-rent="{{ offer.monthlyRentPrice }}">{{ offer.monthlyRentPrice }}€/mois</div>
+                    <div class="totalPriceDisplay">0€</div>
+                    <form action="{{ path('offer', {'id': offer.id}) }}">
+                        <input class="billingType" type="hidden" name="billing" value="">
+                        <button class="btn btn-primary" type="submit">En savoir plus</button>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
 {% endblock %}
 
 {% block javascripts %}

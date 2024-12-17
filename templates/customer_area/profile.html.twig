@@ -1,9 +1,35 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Espace client{% endblock %}
+{% block title %}Vos informations{% endblock %}
 
-{% block description %}Accédez à votre espace client pour gérer vos offres et vos factures.{% endblock %}
+{% block description %}Visualisez vos informations personnelles.{% endblock %}
 
 {% block body %}
-
+    <section class="d-flex flex-column justify-content-center">
+        <h1 class="text-center">Vos informations actuelles</h1>
+    </section>
+    <section class="d-flex flex-column justify-content-center align-items-center mt-4 gap-2">
+        <table class="table table-striped table-hover">
+            <tbody>
+                <tr>
+                    <th>E-mail</th>
+                    <td>{{ app.user.email }}</td>
+                </tr>
+                <tr>
+                    <th>Prénom</th>
+                    <td>{{ app.user.firstName }}</td>
+                </tr>
+                <tr>
+                    <th>Nom</th>
+                    <td>{{ app.user.lastName }}</td>
+                </tr>
+                <tr>
+                    <th>Adresse</th>
+                    <td>{{ app.user.address }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <a href="{{ path('customer_area_profile_edit') }}" class="btn btn-info">Mettre à jour</a>
+        <a href="{{ path('customer_area_home') }}" class="btn btn-danger">Retour</a>
+    </section>
 {% endblock %}

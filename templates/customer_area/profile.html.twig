@@ -31,6 +31,6 @@
         </table>
         <a href="{{ path('customer_area_profile_edit') }}" class="btn btn-info">Mettre à jour</a>
         <a href="{{ path('customer_area_home') }}" class="btn btn-danger">Retour</a>
-        <a href="{{ path('customer_area_profile_delete') }}" class="btn btn-danger" onsubmit="return confirm('Êtes-vous sûrs de vouloir supprimer ce type ?');">Supprimer mon compte</a>
+        <a href="{{ path('customer_area_profile_delete') }}" class="btn btn-danger" onclick="return confirm('Êtes-vous sûrs de vouloir votre compte ?');">Supprimer mon compte</a>
     </section>
 {% endblock %}

@@ -17,9 +17,6 @@ class CustomerRepository extends ServiceEntityRepository
         parent::__construct($registry, Customer::class);
     }
 
-    /**
-     * @throws Exception
-     */
     public function anonymise(Customer $customer): void
     {
         $uniqid = uniqid();
@@ -30,12 +27,8 @@ class CustomerRepository extends ServiceEntityRepository
         $customer->setAddress('Anonyme');
         $customer->setVerified(false);
         $customer->setRoles([]);
+        $customer->setPassword('');
 
         $this->getEntityManager()->flush();
-
-        $query = 'update user set password = \'\' where email = :email';
-        $stmt = $this->getEntityManager()->getConnection()->prepare($query);
-        $stmt->bindValue('email', 'anonyme' . $uniqid . '@exemple.com');
-        $stmt->executeStatement();
     }
 }

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\InvoiceRepository;
+use DateTimeImmutable;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: InvoiceRepository::class)]
@@ -22,6 +24,15 @@ class Invoice
     #[ORM\ManyToOne(inversedBy: 'invoices')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Rental $rental = null;
+
+    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    private ?DateTimeImmutable $date = null;
+
+    #[ORM\Column(type: Types::BLOB, nullable: true)]
+    private $content = null;
+
+    #[ORM\Column]
+    private ?bool $needsGeneration = null;
 
     public function getId(): ?int
     {
@@ -60,6 +71,42 @@ class Invoice
     public function setRental(?Rental $rental): static
     {
         $this->rental = $rental;
+
+        return $this;
+    }
+
+    public function getDate(): ?DateTimeImmutable
+    {
+        return $this->date;
+    }
+
+    public function setDate(DateTimeImmutable $date): static
+    {
+        $this->date = $date;
+
+        return $this;
+    }
+
+    public function getContent()
+    {
+        return $this->content;
+    }
+
+    public function setContent($content): static
+    {
+        $this->content = $content;
+
+        return $this;
+    }
+
+    public function isNeedsGeneration(): ?bool
+    {
+        return $this->needsGeneration;
+    }
+
+    public function setNeedsGeneration(bool $needsGeneration): static
+    {
+        $this->needsGeneration = $needsGeneration;
 
         return $this;
     }

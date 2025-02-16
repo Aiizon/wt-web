@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Espace client{% endblock %}
+
+{% block description %}Accédez à votre espace client pour gérer vos locations et vos factures.{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1 class="text-center my-5">Mes locations</h1>
+        <div class="row">
+            <div class="col-12">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Numero</th>
+                            <th scope="col">Prochain renouvellement</th>
+                            <th scope="col">Fréquence des renouvellements</th>
+                            <th scope="col">Prix par période</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rental in rentals %}
+                            <tr>
+                                <td>{{ rental.id }}</td>
+                                <td>{{ rental.nextDueDate|date('d/m/Y') }}</td>
+                                <td>{{ rental.billingType.months }} Mois</td>
+                                <td>{{ rental.totalRentPrice }} €</td>
+                                {% if rental.doRenew %}
+                                    <td><a href="">Annuler</a></td>
+                                {% else %}
+                                    <td></td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

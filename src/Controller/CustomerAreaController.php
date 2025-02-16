@@ -83,10 +83,15 @@ class CustomerAreaController extends AbstractController
         return $this->redirectToRoute('logout');
     }
 
-    #[Route('/orders', name: 'customer_area_orders')]
+    #[Route('/rentals', name: 'customer_area_rentals')]
     public function orders(): Response
     {
-        return $this->render('customer_area/orders.html.twig');
+        $user     = $this->getUser();
+        $customer = $this->customerRepository->findOneBy(['email' => $user->getUserIdentifier()]);
+
+        return $this->render('customer_area/rentals.html.twig', [
+            'rentals' => $customer->getRentals(),
+        ]);
     }
 
     #[Route('/invoices', name: 'customer_area_invoices')]

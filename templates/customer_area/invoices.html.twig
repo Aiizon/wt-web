@@ -5,5 +5,39 @@
 {% block description %}Accédez à votre espace client pour gérer vos offres et vos factures.{% endblock %}
 
 {% block body %}
-
+    <div class="d-flex flex-column gap-2 container mx-auto px-4 py-8">
+        <h1 class="align-self-center text-2xl fw-bold mb-6">Mes factures</h1>
+        {% for month, monthInvoices in invoices %}
+            <div class="d-flex flex-column mb-8">
+                <h2 class="text-xl fw-semibold mb-4">{{ month|date('F Y') }}</h2>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Numéro</th>
+                            <th>Date</th>
+                            <th>Voir</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for invoice in monthInvoices %}
+                            <tr>
+                                <td>{{ invoice.number }}</td>
+                                <td>{{ invoice.date|date('d/m/Y') }}</td>
+                                <td>
+                                    <a href="{{ path('invoice_show', {id: invoice.id}) }}" target="_blank">
+                                        Voir le PDF
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if not loop.last %}
+                <hr class="border-gray-300">
+            {% endif %}
+        {% else %}
+            <p class="text-gray-500">Aucune facture trouvée.</p>
+        {% endfor %}
+    </div>
 {% endblock %}

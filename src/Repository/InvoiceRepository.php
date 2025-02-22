@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Customer;
 use App\Entity\Invoice;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -16,28 +17,24 @@ class InvoiceRepository extends ServiceEntityRepository
         parent::__construct($registry, Invoice::class);
     }
 
-    //    /**
-    //     * @return Invoice[] Returns an array of Invoice objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('i')
-    //            ->andWhere('i.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('i.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function findByCustomerGroupedByMonth(Customer $customer): array
+    {
+        $invoices = $this->createQueryBuilder('i')
+            ->innerJoin('i.rental', 'r')
+            ->where('r.customer = :customer')
+            ->andWhere('i.content IS NOT NULL')
+            ->andWhere('i.needsGeneration = false')
+            ->setParameter('customer', $customer)
+            ->orderBy('i.date', 'DESC')
+            ->getQuery()
+            ->getResult();
 
-    //    public function findOneBySomeField($value): ?Invoice
-    //    {
-    //        return $this->createQueryBuilder('i')
-    //            ->andWhere('i.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        $grouped = [];
+        foreach ($invoices as $invoice) {
+            $month = $invoice->getDate()->format('Y-m');
+            $grouped[$month][] = $invoice;
+        }
+
+        return $grouped;
+    }
 }

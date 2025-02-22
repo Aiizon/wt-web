@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Form\CustomerUpdateType;
 use App\Repository\CustomerRepository;
+use App\Repository\InvoiceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,17 +18,20 @@ class CustomerAreaController extends AbstractController
     private EntityManagerInterface      $entityManager;
     private CustomerRepository          $customerRepository;
     private UserPasswordHasherInterface $passwordHasher;
+    private InvoiceRepository           $invoiceRepository;
 
     public function __construct
     (
         EntityManagerInterface      $entityManager,
         CustomerRepository          $customerRepository,
-        UserPasswordHasherInterface $passwordHasher
+        UserPasswordHasherInterface $passwordHasher,
+        InvoiceRepository           $invoiceRepository
     )
     {
         $this->entityManager      = $entityManager;
         $this->customerRepository = $customerRepository;
         $this->passwordHasher     = $passwordHasher;
+        $this->invoiceRepository  = $invoiceRepository;
     }
 
     #[Route('/', name: 'customer_area_home')]
@@ -97,9 +101,10 @@ class CustomerAreaController extends AbstractController
     #[Route('/invoices', name: 'customer_area_invoices')]
     public function order(): Response
     {
-        $customer = $this->getUser();
+        $user = $this->getUser();
+        $customer = $this->customerRepository->findOneBy(['email' => $user->getUserIdentifier()]);
 
-        $invoices = $this->customerRepository->findOneBy(['email' => $customer->getUserIdentifier()])->getInvoices();
+        $invoices = $this->invoiceRepository->findByCustomerGroupedByMonth($customer);
 
         return $this->render('customer_area/invoices.html.twig', [
             'invoices' => $invoices,

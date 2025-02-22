@@ -30,7 +30,7 @@
             </tbody>
         </table>
         <a href="{{ path('customer_area_profile_edit') }}" class="btn btn-info">Mettre à jour</a>
-        <a href="{{ path('customer_area_home') }}" class="btn btn-danger">Retour</a>
         <a href="{{ path('customer_area_profile_delete') }}" class="btn btn-danger" onclick="return confirm('Êtes-vous sûrs de vouloir votre compte ?');">Supprimer mon compte</a>
+        <button class="align-self-center btn btn-primary" onclick="window.history.back()">Retour</button>
     </section>
 {% endblock %}

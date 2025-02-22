@@ -25,9 +25,10 @@ class InvoiceCreationHandler
         $invoice->setNeedsGeneration(true);
 
         $this->entityManager->persist($invoice);
+        $this->entityManager->flush();
 
         $rental->addInvoice($invoice);
-
+        $invoice->getNumber();
         $this->entityManager->flush();
 
         return $invoice;

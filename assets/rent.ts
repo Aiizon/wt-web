@@ -2,18 +2,18 @@ import updateBillingType from "./updateBillingType";
 import updateAvailability from "./updateAvailability";
 import checkDiscount, {DiscountResponse} from "./checkDiscount";
 
-const billingTypeSelect: HTMLSelectElement   = document.querySelector('#rent_billingType');
-let selectedBillingType: HTMLOptionElement   = billingTypeSelect.querySelector('option:checked');
-const unitPriceDisplay: HTMLElement          = document.querySelector('.unitPriceDisplay');
-const totalPriceDisplay: HTMLElement         = document.querySelector('.totalPriceDisplay');
-const monthlyRentPrice: number               = parseInt(document.querySelector('.monthlyPriceDisplay').getAttribute('data-rent'));
-const rentalUnits: HTMLInputElement          = document.querySelector('#rent_quantity');
-const offerUnitAmount: number                = parseInt(document.querySelector('.unitAmount').getAttribute('data-unit-amount'));
-const availableDisplay: HTMLElement          = document.querySelector('#availableDisplay');
-const submitButton: HTMLButtonElement        = document.querySelector('button[type="submit"]');
-const discountCodeInput: HTMLInputElement    = document.querySelector('#rent_discount');
+const billingTypeSelect:   HTMLSelectElement = document.querySelector('#rent_billingType');
+let   selectedBillingType: HTMLOptionElement = billingTypeSelect.querySelector('option:checked');
+const unitPriceDisplay:    HTMLElement       = document.querySelector('.unitPriceDisplay');
+const totalPriceDisplay:   HTMLElement       = document.querySelector('.totalPriceDisplay');
+const monthlyRentPrice:    number            = parseInt(document.querySelector('.monthlyPriceDisplay').getAttribute('data-rent'));
+const rentalUnits:         HTMLInputElement  = document.querySelector('#rent_quantity');
+const offerUnitAmount:     number            = parseInt(document.querySelector('.unitAmount').getAttribute('data-unit-amount'));
+const availableDisplay:    HTMLElement       = document.querySelector('#availableDisplay');
+const submitButton:        HTMLButtonElement = document.querySelector('button[type="submit"]');
+const discountCodeInput:   HTMLInputElement  = document.querySelector('#rent_discount');
 const checkDiscountButton: HTMLButtonElement = document.querySelector('#checkDiscountButton');
-const discountDisplay: HTMLElement           = document.querySelector('#discountDisplay');
+const discountDisplay:     HTMLElement       = document.querySelector('#discountDisplay');
 
 const parameterRentalUnits: string = new URLSearchParams(window.location.search).get('quantity');
 if (parameterRentalUnits) {

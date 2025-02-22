@@ -29,7 +29,10 @@ class BillingTypeType extends AbstractType
                         'class' => 'form-control',
                     ],
                     'choice_attr' => function ($choice, $key, $value) {
-                        return ['data-discount' => $choice->getDiscountOverMonthly()];
+                        return [
+                            'data-discount' => $choice->getDiscountOverMonthly(),
+                            'data-months'   => $choice->getMonths(),
+                        ];
                     },
                 ]
             )

@@ -97,6 +97,12 @@ class CustomerAreaController extends AbstractController
     #[Route('/invoices', name: 'customer_area_invoices')]
     public function order(): Response
     {
-        return $this->render('customer_area/invoices.html.twig');
+        $customer = $this->getUser();
+
+        $invoices = $this->customerRepository->findOneBy(['email' => $customer->getUserIdentifier()])->getInvoices();
+
+        return $this->render('customer_area/invoices.html.twig', [
+            'invoices' => $invoices,
+        ]);
     }
 }

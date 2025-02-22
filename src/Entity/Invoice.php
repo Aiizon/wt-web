@@ -15,6 +15,9 @@ class Invoice
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\Column(length: 255, unique: true, nullable: true)]
+    private ?string $number = null;
+
     #[ORM\Column]
     private ?float $totalRentPrice = null;
 
@@ -37,6 +40,21 @@ class Invoice
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getNumber(): ?string
+    {
+        if (!$this->number) {
+            $this->number = sprintf('INV-%s-%04d', date('Y'), $this->id);
+        }
+        return $this->number;
+    }
+
+    public function setNumber(string $number): static
+    {
+        $this->number = $number;
+
+        return $this;
     }
 
     public function getTotalRentPrice(): ?float

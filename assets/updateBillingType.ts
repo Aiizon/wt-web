@@ -9,7 +9,7 @@ export default function updateBillingType(
 ): void
 {
     selectedBillingType = billingTypeSelect.querySelector('option:checked');
-    const months: number   = parseInt(selectedBillingType.value);
+    const months:   number = parseInt(selectedBillingType.getAttribute('data-months'));
     const discount: number = parseInt(selectedBillingType.getAttribute('data-discount'));
 
     if (!Number.isInteger(months)) {
@@ -18,9 +18,9 @@ export default function updateBillingType(
     }
 
     if (billingTypeInput !== null) {
-        billingTypeInput.value = String(months);
+        billingTypeInput.value = String(selectedBillingType.value);
     }
 
-    unitPriceDisplay.textContent = `${Math.round((monthlyRentPrice * months) * (1 + discount / 100))}€`;
+    unitPriceDisplay.textContent  = `${Math.round((monthlyRentPrice * months) * (1 + discount / 100))}€`;
     totalPriceDisplay.textContent = `${Math.round((monthlyRentPrice * months) * (1 + discount / 100)) * Number.parseInt(rentalUnits.value)}€`;
 };

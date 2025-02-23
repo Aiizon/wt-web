@@ -3,7 +3,7 @@ services:
 ###> doctrine/mongodb-odm-bundle ###
   mongodb:
     # In production, you may want to use a managed database service
-    image: mongodb/mongodb-atlas-local:latest
+    image: mongodb/mongodb-community-server:7.0.14-ubi9
     container_name: wt-mongodb
     ports:
       - "27018:27017"
@@ -16,7 +16,8 @@ services:
       - mongodb_data:/data/db:rw
       # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
       # - ./docker/mongodb/data:/data/db:rw
-###< doctrine/mongodb-odm-bundle ###
+
+  ###< doctrine/mongodb-odm-bundle ###
   gotenberg:
     image: gotenberg/gotenberg:8
     container_name: wt-gotenberg
@@ -24,6 +25,24 @@ services:
       - "3000:3000"
     environment:
       - DISABLE_GOOGLE_CHROME=0
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wt-app
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - APP_ENV=${APP_ENV:-prod}
+      - APP_SECRET=${APP_SECRET:-!ChangeMe!}
+      - MONGODB_URL=mongodb://127.0.0.1:27018/${MONGODB_DB:-wt-app}
+    volumes:
+      - .:/app:rw
+    depends_on:
+      - mongodb
+      - gotenberg
 
 volumes:
 ###> doctrine/mongodb-odm-bundle ###

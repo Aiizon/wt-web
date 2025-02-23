@@ -23,11 +23,11 @@ COPY . .
 RUN mkdir -p /var/log/php /var/cache/php
 RUN chmod -R 777 /var/log/php /var/cache/php
 
-COPY ./.env.dist .env
+# COPY ./.env.dist .env
 
 # Installation des dépendances PHP
-ENV COMPOSER_Avhost.confLLOW_SUPERUSER=1
-RUN composer install --no-interaction --no-progress --optimize-autoloader --ignore-platform-reqs --quiet
+ENV COMPOSER_ALLOW_SUPERUSER=1
+RUN composer install --no-interaction --optimize-autoloader --ignore-platform-reqs --quiet
 COPY --from=build-stage /app/public/build public/build
 
 RUN echo "error_log = /var/log/php/error.log" >> /opt/docker/etc/php/php.ini
@@ -39,8 +39,9 @@ RUN mkdir -p /var/cache/php
 RUN chmod -R 777 /var/cache/php
 
 RUN mkdir -p /run/nginx
-COPY ./vhost.conf /opt/docker/etc/nginx/main.conf
+COPY ./vhost.conf /opt/docker/etc/nginx/http.d/site.conf
 
 RUN chown -R nobody /app
 
 EXPOSE 80
+EXPOSE 443

@@ -11,8 +11,9 @@
 
     </head>
     {{ include('header.html.twig') }}
-    <body class="container mx-auto justify-content-center align-content-center min-vh-100">
+    <body class="d-flex flex-column container mx-auto justify-content-center align-content-center min-vh-100">
         {% block body %}{% endblock %}
+        {{ include('flash.html.twig') }}
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }}
         {% endblock %}

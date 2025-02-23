@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <section class="d-flex flex-column justify-content-center">
+        <h1 class="text-center">Créer un jeton</h1>
+    </section>
+    <section class="d-flex flex-column justify-content-center align-items-center mt-4 gap-2">
+        {{ form_start(form, {'attr': {'class': 'col-md-6 mx-auto'}}) }}
+            {{ form_widget(form) }}
+            <div class="d-flex justify-content-center gap-2 mt-3">
+                <button type="submit" class="btn btn-success">Enregistrer</button>
+                <button class="align-self-center btn btn-primary" onclick="window.history.back()">Retour</button>
+            </div>
+        {{ form_end(form) }}
+    </section>
+{% endblock %}

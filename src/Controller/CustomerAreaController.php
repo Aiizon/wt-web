@@ -2,13 +2,17 @@
 
 namespace App\Controller;
 
+use App\DTO\TokenCreationDTO;
 use App\Form\CustomerUpdateType;
+use App\Form\TokenCreationType;
 use App\Form\UnitUsageType;
 use App\Repository\CustomerRepository;
 use App\Repository\InvoiceRepository;
 use App\Repository\RentalRepository;
+use App\Repository\TokenRepository;
 use App\Repository\UnitRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Random\RandomException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,6 +28,7 @@ class CustomerAreaController extends AbstractController
     private InvoiceRepository           $invoiceRepository;
     private UnitRepository              $unitRepository;
     private RentalRepository            $rentalRepository;
+    private TokenRepository             $tokenRepository;
 
     public function __construct
     (
@@ -32,7 +37,8 @@ class CustomerAreaController extends AbstractController
         UserPasswordHasherInterface $passwordHasher,
         InvoiceRepository           $invoiceRepository,
         UnitRepository              $unitRepository,
-        RentalRepository            $rentalRepository
+        RentalRepository            $rentalRepository,
+        TokenRepository             $tokenRepository
     )
     {
         $this->entityManager      = $entityManager;
@@ -41,6 +47,7 @@ class CustomerAreaController extends AbstractController
         $this->invoiceRepository  = $invoiceRepository;
         $this->unitRepository     = $unitRepository;
         $this->rentalRepository   = $rentalRepository;
+        $this->tokenRepository    = $tokenRepository;
     }
 
     #[Route('/', name: 'customer_area_home')]
@@ -83,6 +90,67 @@ class CustomerAreaController extends AbstractController
         return $this->render('customer_area/profile_edit.html.twig', [
             'form' => $form->createView(),
         ]);
+    }
+
+    #[Route(path: '/tokens', name: 'customer_area_tokens')]
+    public function manageTokens(): Response
+    {
+        $user   = $this->getUser();
+        $tokens = $this->tokenRepository->findBy(['user' => $user]);
+
+        return $this->render('customer_area/tokens.html.twig', [
+            'tokens' => $tokens,
+        ]);
+    }
+
+    /**
+     * @throws RandomException
+     */
+    #[Route(path: '/token/create', name: 'customer_area_token_create')]
+    public function createToken(Request $request): Response
+    {
+        $user = $this->getUser();
+        $dto  = TokenCreationDTO::create('', $user);
+
+        $form = $this->createForm(TokenCreationType::class, $dto, [
+            'attr' => [
+                'class' => 'd-flex flex-column justify-content-center align-items-center form'
+            ]
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $token = $this->tokenRepository->generate($dto);
+
+            $this->addFlash('success', 'Token généré avec succès : ' . $token->getValue());
+
+            return $this->redirectToRoute('customer_area_tokens');
+        }
+
+        return $this->render('customer_area/token_create.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route(path: '/token/{id}/delete', name: 'customer_area_token_delete')]
+    public function deleteToken(int $id): Response
+    {
+        $user = $this->getUser();
+        $token = $this->tokenRepository->findOneBy([
+            'id' => $id,
+            'user' => $user
+        ]);
+
+        if (!$token) {
+            throw $this->createNotFoundException('Token non trouvé');
+        }
+
+        $this->entityManager->remove($token);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Token supprimé avec succès');
+
+        return $this->redirectToRoute('customer_area_tokens');
     }
 
     #[Route(path: '/profile/delete', name: 'customer_area_profile_delete')]

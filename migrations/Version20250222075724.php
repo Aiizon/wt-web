@@ -10,22 +10,24 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20241127083241 extends AbstractMigration
+final class Version20250222075724 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return 'Add verification boolean to user';
+        return 'Add number column to invoice';
     }
 
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE user ADD is_verified TINYINT(1) NOT NULL');
+        $this->addSql('ALTER TABLE invoice ADD number VARCHAR(255) NULL');
+        $this->addSql('CREATE UNIQUE INDEX UNIQ_9065174496901F54 ON invoice (number)');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE `user` DROP is_verified');
+        $this->addSql('DROP INDEX UNIQ_9065174496901F54 ON invoice');
+        $this->addSql('ALTER TABLE invoice DROP number');
     }
 }

@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Espace client{% endblock %}
+
+{% block description %}Accédez à votre espace client pour gérer vos offres et vos factures.{% endblock %}
+
+{% block body %}
+    <div class="d-flex flex-column container">
+        <h1 class="text-center my-5">Mes unités</h1>
+        <div class="row">
+            <div class="col-12">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Unité</th>
+                            <th>Localisation</th>
+                            <th>Usage</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for unit in units %}
+                            <tr {% if unit.unitUsage %}style="background-color: {{ unit.unitUsage.color }} !important"{% endif %}>
+                                <td>{{ unit.id }}</td>
+                                <td>{{ unit.name }}, {{ unit.bay.name }} ({{ unit.bay.location }})</td>
+                                <td>{{ unit.unitUsage ? unit.unitUsage.name : '-' }}</td>
+                                <td>
+                                    <a href="{{ path('customer_area_update_unit_usage', {'id': unit.id}) }}" class="btn btn-sm btn-info">Modifier l'usage</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <button class="align-self-center btn btn-primary" onclick="window.history.back()">Retour</button>
+    </div>
+{% endblock %}

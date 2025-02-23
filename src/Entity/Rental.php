@@ -3,6 +3,10 @@
 namespace App\Entity;
 
 use App\Repository\RentalRepository;
+use DateInterval;
+use DateMalformedIntervalStringException;
+use DateTime;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -19,14 +23,16 @@ class Rental
     #[ORM\Column]
     private ?float $monthlyRentPrice = null;
 
+    private ?int $totalRentPrice = null;
+
     #[ORM\Column]
     private ?bool $doRenew = null;
 
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE)]
-    private ?\DateTimeImmutable $firstRentalDate = null;
+    private ?DateTimeImmutable $firstRentalDate = null;
 
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: true)]
-    private ?\DateTimeImmutable $rentalEndDate = null;
+    private ?DateTimeImmutable $rentalEndDate = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
@@ -55,10 +61,17 @@ class Rental
     #[ORM\OneToMany(targetEntity: Invoice::class, mappedBy: 'rental')]
     private Collection $invoices;
 
+    private ?DateTimeImmutable $nextDueDate = null;
+
+    /**
+     * @throws DateMalformedIntervalStringException
+     */
     public function __construct()
     {
-        $this->units = new ArrayCollection();
+        $this->units    = new ArrayCollection();
         $this->invoices = new ArrayCollection();
+        $this->setRentPrice();
+        $this->setNextDueDate();
     }
 
     public function getId(): ?int
@@ -78,6 +91,35 @@ class Rental
         return $this;
     }
 
+    public function setRentPrice(): static
+    {
+        if ($this->getBillingType() === null) {
+            return $this;
+        }
+
+        $totalRentPrice = ($this->getMonthlyRentPrice() * $this->getBillingType()->getMonths() ?? 1)
+            * (1 - $this->getBillingType()->getDiscountOverMonthly() / 100);
+
+        if ($this->getDiscount() !== null) {
+            $this->getDiscount()->isPercentage() ?
+                $totalRentPrice *= (1 - $this->getDiscount()->getAmount() / 100) :
+                $totalRentPrice -= $this->getDiscount()->getAmount();
+        }
+
+        $this->totalRentPrice = $totalRentPrice;
+
+        return $this;
+    }
+
+    public function getTotalRentPrice(): ?int
+    {
+        if ($this->totalRentPrice === null) {
+            $this->setRentPrice();
+        }
+
+        return $this->totalRentPrice;
+    }
+
     public function isDoRenew(): ?bool
     {
         return $this->doRenew;
@@ -90,24 +132,24 @@ class Rental
         return $this;
     }
 
-    public function getFirstRentalDate(): ?\DateTimeImmutable
+    public function getFirstRentalDate(): ?DateTimeImmutable
     {
         return $this->firstRentalDate;
     }
 
-    public function setFirstRentalDate(\DateTimeImmutable $firstRentalDate): static
+    public function setFirstRentalDate(DateTimeImmutable $firstRentalDate): static
     {
         $this->firstRentalDate = $firstRentalDate;
 
         return $this;
     }
 
-    public function getRentalEndDate(): ?\DateTimeImmutable
+    public function getRentalEndDate(): ?DateTimeImmutable
     {
         return $this->rentalEndDate;
     }
 
-    public function setRentalEndDate(?\DateTimeImmutable $rentalEndDate): static
+    public function setRentalEndDate(?DateTimeImmutable $rentalEndDate): static
     {
         $this->rentalEndDate = $rentalEndDate;
 
@@ -214,5 +256,37 @@ class Rental
         }
 
         return $this;
+    }
+
+    /**
+     * @throws DateMalformedIntervalStringException
+     */
+    public function setNextDueDate(): void
+    {
+        if ($this->firstRentalDate === null) {
+            return;
+        }
+
+        $result = DateTime::createFromImmutable($this->firstRentalDate);
+        $today = new DateTime();
+
+        while ($result <= $today) {
+            date_add($result, new DateInterval('P' . $this->billingType->getMonths() . 'M'));
+        }
+
+        $result->setTime(0, 0, 0);
+        $this->nextDueDate = DateTimeImmutable::createFromMutable($result);
+    }
+
+    /**
+     * @throws DateMalformedIntervalStringException
+     */
+    public function getNextDueDate(): DateTimeImmutable
+    {
+        if ($this->nextDueDate === null) {
+            $this->setNextDueDate();
+        }
+
+        return $this->nextDueDate;
     }
 }

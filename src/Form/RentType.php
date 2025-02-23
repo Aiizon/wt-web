@@ -73,6 +73,7 @@ class RentType extends AbstractType
             ->add('doRenew', RadioType::class, [
                 'label' => 'Renouveler automatiquement ?',
                 'required' => false,
+                'value' => true,
                 'attr' => [
                     'class' => 'form-check-input',
                 ],

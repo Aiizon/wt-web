@@ -3,8 +3,11 @@
 namespace App\Controller;
 
 use App\Form\CustomerUpdateType;
+use App\Form\UnitUsageType;
 use App\Repository\CustomerRepository;
 use App\Repository\InvoiceRepository;
+use App\Repository\RentalRepository;
+use App\Repository\UnitRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,19 +22,25 @@ class CustomerAreaController extends AbstractController
     private CustomerRepository          $customerRepository;
     private UserPasswordHasherInterface $passwordHasher;
     private InvoiceRepository           $invoiceRepository;
+    private UnitRepository              $unitRepository;
+    private RentalRepository            $rentalRepository;
 
     public function __construct
     (
         EntityManagerInterface      $entityManager,
         CustomerRepository          $customerRepository,
         UserPasswordHasherInterface $passwordHasher,
-        InvoiceRepository           $invoiceRepository
+        InvoiceRepository           $invoiceRepository,
+        UnitRepository              $unitRepository,
+        RentalRepository            $rentalRepository
     )
     {
         $this->entityManager      = $entityManager;
         $this->customerRepository = $customerRepository;
         $this->passwordHasher     = $passwordHasher;
         $this->invoiceRepository  = $invoiceRepository;
+        $this->unitRepository     = $unitRepository;
+        $this->rentalRepository   = $rentalRepository;
     }
 
     #[Route('/', name: 'customer_area_home')]
@@ -108,6 +117,63 @@ class CustomerAreaController extends AbstractController
 
         return $this->render('customer_area/invoices.html.twig', [
             'invoices' => $invoices,
+        ]);
+    }
+
+    #[Route('/units', name: 'customer_area_units')]
+    public function units(): Response
+    {
+        $user = $this->getUser();
+        $customer = $this->customerRepository->findOneBy(['email' => $user->getUserIdentifier()]);
+
+        $rentals = $this->rentalRepository->findBy([
+            'customer' => $customer,
+            'rentalEndDate' => null
+        ]);
+        $units = [];
+
+        foreach ($rentals as $rental) {
+            $units = array_merge($units, $rental->getUnits()->toArray());
+        }
+
+        return $this->render('customer_area/units.html.twig', [
+            'units' => $units,
+        ]);
+    }
+
+    #[Route('/unit/{id}/usage', name: 'customer_area_update_unit_usage', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    public function updateUnitUsage(Request $request, int $id): Response
+    {
+        $user     = $this->getUser();
+        $customer = $this->customerRepository->findOneBy(['email' => $user->getUserIdentifier()]);
+
+        $unit     = $this->unitRepository->find($id);
+        $rentals  = $this->rentalRepository->findBy([
+            'customer' => $customer,
+            'rentalEndDate' => null
+        ]);
+
+        $units = [];
+        foreach ($rentals as $rental) {
+            $units = array_merge($units, $rental->getUnits()->toArray());
+        }
+
+        if (!$unit || !in_array($unit, $units)) {
+            throw $this->createNotFoundException('Unité non trouvée');
+        }
+
+        $form = $this->createForm(UnitUsageType::class, $unit);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Unité mise à jour avec succès.');
+            return $this->redirectToRoute('customer_area_units');
+        }
+
+        return $this->render('customer_area/unit_usage.html.twig', [
+            'form' => $form->createView(),
+            'unit' => $unit
         ]);
     }
 }

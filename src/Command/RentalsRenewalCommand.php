@@ -72,6 +72,12 @@ class RentalsRenewalCommand extends Command
             try {
                 if (!$rental->isDoRenew()) {
                     $rental->setRentalEndDate($date);
+
+                    $units = $rental->getUnits();
+                    foreach ($units as $unit) {
+                        $unit->setUnitUsage(null);
+                    }
+
                     $this->entityManager->flush();
                     $output->writeln("Ending rental {$rental->getId()}");
                     continue;

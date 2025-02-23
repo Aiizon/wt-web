@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <h1 class="text-center my-5">Modifier l'usage - Unité #{{ unit.id }}</h1>
+        {{ form_start(form, {'attr': {'class': 'col-md-6 mx-auto'}}) }}
+            {{ form_widget(form) }}
+            <div class="d-flex justify-content-center gap-2 mt-3">
+                <button type="submit" class="btn btn-success">Enregistrer</button>
+                <button class="align-self-center btn btn-primary" onclick="window.history.back()">Retour</button>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

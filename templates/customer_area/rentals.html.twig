@@ -23,7 +23,13 @@
                         {% for rental in rentals %}
                             <tr>
                                 <td>{{ rental.id }}</td>
-                                <td>{{ rental.nextDueDate|date('d/m/Y') }}</td>
+                                {% if rental.doRenew %}
+                                    <td>{{ rental.nextDueDate|date('d/m/Y') }}</td>
+                                {% elseif rental.nextDueDate|date('d/m/Y') > 'now'|date('d/m/Y') %}
+                                    <td>Terminée (finie le {{ rental.nextDueDate|date('d/m/Y') }})</td>
+                                {% else %}
+                                    <td>Terminée</td>
+                                {% endif %}
                                 <td>{{ rental.billingType.months }} Mois</td>
                                 <td>{{ rental.totalRentPrice }} €</td>
                                 {% if rental.doRenew %}

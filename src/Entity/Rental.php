@@ -98,11 +98,11 @@ class Rental
         }
 
         $totalRentPrice = ($this->getMonthlyRentPrice() * $this->getBillingType()->getMonths() ?? 1)
-            * (1 - $this->getBillingType()->getDiscountOverMonthly());
+            * (1 - $this->getBillingType()->getDiscountOverMonthly() / 100);
 
         if ($this->getDiscount() !== null) {
             $this->getDiscount()->isPercentage() ?
-                $totalRentPrice *= (1 - $this->getDiscount()->getAmount()) :
+                $totalRentPrice *= (1 - $this->getDiscount()->getAmount() / 100) :
                 $totalRentPrice -= $this->getDiscount()->getAmount();
         }
 

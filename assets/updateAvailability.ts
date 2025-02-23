@@ -8,9 +8,9 @@ export default async function updateAvailability(
     submitButton:      HTMLButtonElement
 ): Promise<void>
 {
-    const availableUnits: number     = await getUnitAvailability();
+    const availableUnits:     number = await getUnitAvailability();
     const selectedUnitAmount: number = parseInt(rentalUnits.value) * offerUnitAmount;
-    const quantity: string           = rentalUnits.value;
+    const quantity:           string = rentalUnits.value;
 
     if (selectedUnitAmount <= availableUnits) {
         availableDisplay.textContent = 'Disponible';

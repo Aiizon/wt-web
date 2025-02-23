@@ -15,6 +15,7 @@
                             <th scope="col">Numero</th>
                             <th scope="col">Prochain renouvellement</th>
                             <th scope="col">Fréquence des renouvellements</th>
+                            <th scope="col">Unités</th>
                             <th scope="col">Prix par période</th>
                             <th scope="col">Actions</th>
                         </tr>
@@ -31,9 +32,10 @@
                                     <td>Terminée</td>
                                 {% endif %}
                                 <td>{{ rental.billingType.months }} Mois</td>
+                                <td>{{ rental.units|length }}</td>
                                 <td>{{ rental.totalRentPrice }} €</td>
                                 {% if rental.doRenew %}
-                                    <td><a href="">Annuler</a></td>
+                                    <td><a href="{{ path('customer_area_cancel_rental', {'id': rental.id}) }}">Annuler</a></td>
                                 {% else %}
                                     <td></td>
                                 {% endif %}

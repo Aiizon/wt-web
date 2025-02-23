@@ -97,7 +97,7 @@ class CustomerAreaController extends AbstractController
     }
 
     #[Route('/rentals', name: 'customer_area_rentals')]
-    public function orders(): Response
+    public function rentals(): Response
     {
         $user     = $this->getUser();
         $customer = $this->customerRepository->findOneBy(['email' => $user->getUserIdentifier()]);
@@ -105,6 +105,28 @@ class CustomerAreaController extends AbstractController
         return $this->render('customer_area/rentals.html.twig', [
             'rentals' => $customer->getRentals(),
         ]);
+    }
+
+    #[Route('/rental/{id}/cancel', name: 'customer_area_cancel_rental', requirements: ['id' => '\d+'])]
+    public function cancelRental(int $id): Response
+    {
+        $user     = $this->getUser();
+        $customer = $this->customerRepository->findOneBy(['email' => $user->getUserIdentifier()]);
+
+        $rental = $this->rentalRepository->findOneBy([
+            'id' => $id,
+            'customer' => $customer
+        ]);
+
+        if (!$rental) {
+            throw $this->createNotFoundException('Location non trouvée');
+        }
+
+        $rental->setDoRenew(false);
+        $this->entityManager->flush();
+        $this->addFlash('success', 'Location annulée avec succès');
+
+        return $this->redirectToRoute('customer_area_rentals');
     }
 
     #[Route('/invoices', name: 'customer_area_invoices')]

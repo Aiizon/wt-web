@@ -11,17 +11,17 @@ Vous pouvez consulter les unités disponibles, les réserver, les libérer et le
 - [x] Créer le MCD
 - [x] Créer les entités
 - [x] Créer la base de données & les tables
-- [ ] Mettre en place la stack logicielle avec Docker compose
+- [x] Mettre en place la stack logicielle avec Docker compose
 - [x] Rédiger les textes de la page d'accueil & à propos
 - [x] Afficher les offres commerciales
 - [x] Gérer les commentaires clients pour les offres
 - [x] Mettre en place la vérification de disponibilité des unités
 - [x] Mettre en place les commandes (sans paiement)
-- [ ] Gérer les annulations de commandes
-- [ ] Gérer la génération de factures par PDF
+- [x] Gérer les annulations de commandes
+- [x] Gérer la génération de factures par PDF
 - [x] Gérer l'authentification & les rôles
 - [x] Créer l'espace client (avec gestion des données personnelles)
-- [ ] Mettre en place la gestion des unités, leur statut, leur prix, etc.
+- [x] Mettre en place la gestion des unités, leur statut, leur prix, etc.
 - [ ] Mettre en place l'affichage de l'état des unités en temps réel
 - [ ] Ajouter l'historique des interventions
 - [ ] Mettre en place les tests unitaires

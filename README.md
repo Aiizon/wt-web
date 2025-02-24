@@ -36,6 +36,10 @@ Vous pouvez consulter les unités disponibles, les réserver, les libérer et le
 
 ![dbms-schema.png](assets/doc/dbms-schema.png)
 
+## Prérequis
+
+Une machine capable de lancer un projet Symfony (PHP, CLI Symfony, prérequis du CLI, Composer), Git, Docker.
+
 ## Installation
 
 Copier le fichier `.env.dist` en `.env` et modifier les variables d'environnement (notemment la chaîne de connection à la base de données).
@@ -48,4 +52,7 @@ php bin/console doctrine:database:create
 ```
 ```bash
 php bin/console doctrine:migrations:migrate
+```
+```bash
+docker compose up
 ```

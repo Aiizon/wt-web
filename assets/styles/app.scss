@@ -1,2 +1,14 @@
 @import "bootstrap/scss/bootstrap";
 @import "bootstrap-icons";
+
+.main {
+  min-height: 80vh;
+  margin-top: 5vh;
+}
+
+@media (max-width: 768px) {
+  .main {
+    margin-top: 12vh;
+    margin-bottom: 12vh;
+  }
+}

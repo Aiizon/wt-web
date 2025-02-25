@@ -22,6 +22,7 @@ Vous pouvez consulter les unités disponibles, les réserver, les libérer et le
 - [x] Gérer l'authentification & les rôles
 - [x] Créer l'espace client (avec gestion des données personnelles)
 - [x] Mettre en place la gestion des unités, leur statut, leur prix, etc.
+- [ ] Responsiveness
 - [ ] Mettre en place l'affichage de l'état des unités en temps réel
 - [ ] Ajouter l'historique des interventions
 - [ ] Mettre en place les tests unitaires

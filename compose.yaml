@@ -1,17 +1,27 @@
 
 services:
+  mysql:
+    image: mysql:8.0.40-bookworm
+    container_name: wt-mysql
+    ports:
+      - "3308:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-wt-app}
+    volumes:
+      - mysql_data:/var/lib/mysql:rw
+
 ###> doctrine/mongodb-odm-bundle ###
   mongodb:
     # In production, you may want to use a managed database service
     image: mongodb/mongodb-community-server:7.0.14-ubi9
     container_name: wt-mongodb
     ports:
-      - "27018:27017"
+      - "27017:27017"
     environment:
-      - MONGODB_INITDB_DATABASE=${MONGODB_DB:-app}
-      # You should definitely set a root username and password in production
-      - MONGODB_INITDB_ROOT_USERNAME=${MONGODB_USERNAME:-}
-      - MONGODB_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD:-}
+      - MONGO_INITDB_DATABASE=${MONGODB_DB:-wt-app}
+#      - MONGO_INITDB_ROOT_USERNAME=${MONGODB_USERNAME:-user}
+#      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD:-password}
     volumes:
       - mongodb_data:/data/db:rw
       # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
@@ -31,20 +41,19 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: wt-app
-    ports:
-      - "80:80"
-      - "443:443"
     environment:
       - APP_ENV=${APP_ENV:-prod}
-      - APP_SECRET=${APP_SECRET:-!ChangeMe!}
-      - MONGODB_URL=mongodb://127.0.0.1:27018/${MONGODB_DB:-wt-app}
-    volumes:
-      - .:/app:rw
+      - APP_SECRET=${APP_SECRET:-BhR0ow4Y689h2HynewZUTU8kAO3yNEZD}
+      - DATABASE_URL=mysql://root:${MYSQL_ROOT_PASSWORD}@mysql/${MYSQL_DATABASE:-wt-app}?serverVersion=8.0.40&charset=utf8mb4
+      - MONGODB_URL=mongodb://mongodb
+      - MONGODB_DB=${MONGODB_DB:-wt-app}
     depends_on:
       - mongodb
       - gotenberg
+      - mysql
 
 volumes:
 ###> doctrine/mongodb-odm-bundle ###
   mongodb_data:
 ###< doctrine/mongodb-odm-bundle ###
+  mysql_data:

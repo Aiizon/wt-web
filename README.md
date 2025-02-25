@@ -38,21 +38,19 @@ Vous pouvez consulter les unités disponibles, les réserver, les libérer et le
 
 ## Prérequis
 
-Une machine capable de lancer un projet Symfony (PHP, CLI Symfony, prérequis du CLI, Composer), Git, Docker.
+Une machine capable de lancer un projet Symfony (PHP, CLI Symfony, prérequis du CLI + extension PDO MongoDB, Composer), Git, Docker.
 
 ## Installation
 
 Copier le fichier `.env.dist` en `.env` et modifier les variables d'environnement (notemment la chaîne de connection à la base de données).
 
+Mettre à jour les ports des conteneurs dans `compose.override.yaml` si nécessaire.
+
 ```bash
-composer install
+docker compose up -d --build
 ```
 ```bash
-php bin/console doctrine:database:create
-```
-```bash
+docker exec -ti wt-app bash
+
 php bin/console doctrine:migrations:migrate
-```
-```bash
-docker compose up
 ```

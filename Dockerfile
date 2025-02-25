@@ -23,8 +23,6 @@ COPY . .
 RUN mkdir -p /var/log/php /var/cache/php
 RUN chmod -R 777 /var/log/php /var/cache/php
 
-# COPY ./.env.dist .env
-
 # Installation des dépendances PHP
 ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN composer install --no-interaction --optimize-autoloader --ignore-platform-reqs --quiet
@@ -39,9 +37,10 @@ RUN mkdir -p /var/cache/php
 RUN chmod -R 777 /var/cache/php
 
 RUN mkdir -p /run/nginx
-COPY ./vhost.conf /opt/docker/etc/nginx/http.d/site.conf
+COPY ./vhost.conf /opt/docker/etc/nginx/vhost.conf
 
-RUN chown -R nobody /app
+RUN chown -R nobody:nogroup /app
+RUN chmod -R 755 /app/public
 
 EXPOSE 80
 EXPOSE 443

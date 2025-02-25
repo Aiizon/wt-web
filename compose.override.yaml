@@ -1,7 +1,13 @@
 
 services:
+  mysql:
+    ports:
+      - "3308:3306"
 ###> doctrine/mongodb-odm-bundle ###
   mongodb:
     ports:
       - "27017"
 ###< doctrine/mongodb-odm-bundle ###
+  app:
+    ports:
+      - "8006:80"

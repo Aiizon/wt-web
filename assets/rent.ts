@@ -20,11 +20,11 @@ if (parameterRentalUnits) {
     rentalUnits.value = parameterRentalUnits;
 }
 
-updateBillingType(selectedBillingType, billingTypeSelect, unitPriceDisplay, totalPriceDisplay, rentalUnits, monthlyRentPrice, null);
+updateBillingType(selectedBillingType, billingTypeSelect, unitPriceDisplay, totalPriceDisplay, rentalUnits, monthlyRentPrice, null, discountDisplay);
 
 billingTypeSelect.addEventListener('change', (e: Event) => {
     e.preventDefault();
-    updateBillingType(selectedBillingType, billingTypeSelect, unitPriceDisplay, totalPriceDisplay, rentalUnits, monthlyRentPrice, null);
+    updateBillingType(selectedBillingType, billingTypeSelect, unitPriceDisplay, totalPriceDisplay, rentalUnits, monthlyRentPrice, null, discountDisplay);
 });
 
 updateAvailability(rentalUnits, offerUnitAmount, null, availableDisplay, submitButton);
@@ -32,7 +32,7 @@ updateAvailability(rentalUnits, offerUnitAmount, null, availableDisplay, submitB
 rentalUnits.addEventListener('change', (e: Event) => {
     e.preventDefault();
     selectedBillingType = billingTypeSelect.querySelector('option:checked');
-    updateBillingType(selectedBillingType, billingTypeSelect, unitPriceDisplay, totalPriceDisplay, rentalUnits, monthlyRentPrice, null);
+    updateBillingType(selectedBillingType, billingTypeSelect, unitPriceDisplay, totalPriceDisplay, rentalUnits, monthlyRentPrice, null, discountDisplay);
     updateAvailability(rentalUnits, offerUnitAmount, null, availableDisplay, submitButton);
 });
 
@@ -41,7 +41,13 @@ checkDiscountButton.addEventListener('click', async (e: MouseEvent) => {
     let discount: DiscountResponse = await checkDiscount(discountCodeInput.value);
     if (discount.isValid) {
         discountDisplay.classList.remove('d-none');
+        discountDisplay.setAttribute('data-amount', discount.amount.toString());
+        discountDisplay.setAttribute('data-percentage', discount.isPercentage ? '1' : '0');
+        updateBillingType(selectedBillingType, billingTypeSelect, unitPriceDisplay, totalPriceDisplay, rentalUnits, monthlyRentPrice, null, discountDisplay);
     } else {
         discountDisplay.classList.add('d-none');
+        discountDisplay.removeAttribute('data-amount');
+        discountDisplay.removeAttribute('data-percentage');
+        updateBillingType(selectedBillingType, billingTypeSelect, unitPriceDisplay, totalPriceDisplay, rentalUnits, monthlyRentPrice, null, discountDisplay);
     }
 });

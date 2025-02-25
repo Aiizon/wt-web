@@ -16,8 +16,7 @@
                 {{ form_row(form.billingType) }}
                 {{ form_row(form.quantity) }}
                 {{ form_row(form.doRenew) }}
-                {# @todo: gérer l'affichage du prix avec réduction (front + facture) #}
-                <div class="d-none">
+                <div>
                     <div class="d-flex flex-row justify-content-between align-items-center">
                         {{ form_row(form.discount) }}
                         <button id="checkDiscountButton" class="btn btn-secondary">🔎</button>

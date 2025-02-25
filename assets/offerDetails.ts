@@ -21,17 +21,17 @@ if (billingTypeParameter) {
     selectedBillingType = billingTypeSelect.querySelector('option:checked');
 }
 
-updateBillingType(selectedBillingType, billingTypeSelect, unitPriceDisplay, totalPriceDisplay, rentalUnits, monthlyRentPrice, billingTypeInput);
+updateBillingType(selectedBillingType, billingTypeSelect, unitPriceDisplay, totalPriceDisplay, rentalUnits, monthlyRentPrice, billingTypeInput, null);
 
 billingTypeSelect.addEventListener('change', (e: Event) => {
     e.preventDefault();
-    updateBillingType(selectedBillingType, billingTypeSelect, unitPriceDisplay, totalPriceDisplay, rentalUnits, monthlyRentPrice, billingTypeInput);
+    updateBillingType(selectedBillingType, billingTypeSelect, unitPriceDisplay, totalPriceDisplay, rentalUnits, monthlyRentPrice, billingTypeInput, null);
 });
 
 updateAvailability(rentalUnits, offerUnitAmount, rentQuantityInput, availableDisplay, submitButton);
 
 rentalUnits.addEventListener('change', (e: Event) => {
     e.preventDefault();
-    updateBillingType(selectedBillingType, billingTypeSelect, unitPriceDisplay, totalPriceDisplay, rentalUnits, monthlyRentPrice, billingTypeInput);
+    updateBillingType(selectedBillingType, billingTypeSelect, unitPriceDisplay, totalPriceDisplay, rentalUnits, monthlyRentPrice, billingTypeInput, null);
     updateAvailability(rentalUnits, offerUnitAmount, rentQuantityInput, availableDisplay, submitButton);
 });

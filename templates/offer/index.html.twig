@@ -6,24 +6,34 @@
 
 {% block body %}
     <div class="d-flex flex-row justify-content-evenly align-content-center">
-        <div class="d-flex flex-column justify-content-evenly">
+        <div class="d-flex flex-column w-25 justify-content-evenly">
             <h1>{{ offer.name }}</h1>
             <p id="unitAmount" data-unit-amount="{{ offer.maxUnits }}">Unité(s) : {{ offer.maxUnits }}</p>
             <p>Disponibilité : {{ offer.availability }}</p>
             <p>Bande passante : {{ offer.bandwidth }}</p>
         </div>
-        <div class="d-flex flex-column justify-content-evenly">
-            {{ form(billingTypeForm) }}
-            {{ form(rentQuantityForm) }}
-            <p class="monthlyPriceDisplay" data-rent="{{ offer.monthlyRentPrice }}">Prix mensuel : {{ offer.monthlyRentPrice }} €</p>
-            <p>Prix unitaire : <span class="unitPriceDisplay">0€</span></p>
-            <p>Prix total : <span class="totalPriceDisplay">0€</span></p>
-            <form action="{{ path('rent', {'id': offer.id}) }}">
-                <input class="billingType" type="hidden" name="billing" value="">
-                <input class="rentQuantity" type="hidden" name="quantity" value="">
-                <button class="btn btn-primary" type="submit">Commander</button>
-                <p id="availableDisplay" class="text-success">Disponible</p>
-            </form>
+        <div class="vr"></div>
+        <div class="d-flex flex-row w-75 gap-4 justify-content-evenly">
+            <div class="d-flex flex-column gap-2">
+                {{ form(billingTypeForm) }}
+                {{ form(rentQuantityForm) }}
+            </div>
+            <div class="d-flex flex-column gap-2">
+                <p class="monthlyPriceDisplay" data-rent="{{ offer.monthlyRentPrice }}">Prix mensuel : {{ offer.monthlyRentPrice }} €</p>
+                <p>Prix unitaire : <span class="unitPriceDisplay">0€</span></p>
+                <p>Prix total : <span class="totalPriceDisplay">0€</span></p>
+                {% if app.user is null %}
+                    <p>Connectez-vous pour commander</p>
+                    <a class="btn btn-warning" href="{{ path('login') }}">Se connecter</a>
+                {% else %}
+                    <form action="{{ path('rent', {'id': offer.id}) }}">
+                        <input class="billingType" type="hidden" name="billing" value="">
+                        <input class="rentQuantity" type="hidden" name="quantity" value="">
+                        <button class="btn btn-primary" type="submit">Commander</button>
+                        <p id="availableDisplay" class="text-success">Disponible</p>
+                    </form>
+                {% endif %}
+            </div>
         </div>
     </div>
     <section class="d-flex flex-column justify-content-evenly">
@@ -35,6 +45,8 @@
                 {{ form_row(feedbackForm.content) }}
                 {{ form_row(feedbackForm.submit) }}
             {{ form_end(feedbackForm) }}
+        {% else %}
+            <p class="text-center">Vous devez être connecté pour laisser un avis</p>
         {% endif %}
         <hr>
         <div class="d-flex flex-column justify-content-evenly">
@@ -55,6 +67,8 @@
                         </div>
                         <p class="text-center">{{ feedback.content }}</p>
                     </div>
+                {% else %}
+                    <p class="text-center">Aucun avis pour le moment, soyez notre premier !</p>
                 {% endfor %}
             </div>
         </div>

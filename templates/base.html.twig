@@ -8,11 +8,12 @@
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
         {% endblock %}
-
     </head>
-    {{ include('header.html.twig') }}
     <body class="d-flex flex-column container mx-auto justify-content-center align-content-center min-vh-100">
-        {% block body %}{% endblock %}
+        {{ include('header.html.twig') }}
+        <section class="d-flex flex-column justify-content-evenly gap-2" style="min-height: 80vh; margin-top: 10vh;">
+            {% block body %}{% endblock %}
+        </section>
         {{ include('flash.html.twig') }}
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }}

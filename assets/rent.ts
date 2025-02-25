@@ -4,7 +4,6 @@ import checkDiscount, {DiscountResponse} from "./checkDiscount";
 
 const billingTypeSelect:   HTMLSelectElement = document.querySelector('#rent_billingType');
 let   selectedBillingType: HTMLOptionElement = billingTypeSelect.querySelector('option:checked');
-console.log(billingTypeSelect, selectedBillingType);
 const unitPriceDisplay:    HTMLElement       = document.querySelector('.unitPriceDisplay');
 const totalPriceDisplay:   HTMLElement       = document.querySelector('.totalPriceDisplay');
 const monthlyRentPrice:    number            = parseInt(document.querySelector('.monthlyPriceDisplay').getAttribute('data-rent'));
@@ -31,7 +30,6 @@ billingTypeSelect.addEventListener('change', (e: Event) => {
 updateAvailability(rentalUnits, offerUnitAmount, null, availableDisplay, submitButton);
 
 rentalUnits.addEventListener('change', (e: Event) => {
-    console.log('rentalUnits change event');
     e.preventDefault();
     selectedBillingType = billingTypeSelect.querySelector('option:checked');
     updateBillingType(selectedBillingType, billingTypeSelect, unitPriceDisplay, totalPriceDisplay, rentalUnits, monthlyRentPrice, null);

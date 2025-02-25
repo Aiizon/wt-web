@@ -44,11 +44,13 @@ class RentalCreationHandler
             $rental->setCustomer($rentalDto->customer);
             $rental->setDiscount($this->discountRepository->findOneBy(['code' => $rentalDto->discount, 'isActive' => true]) ?? null);
 
-            $availableUnits = $this->unitRepository->getAvailableUnitsForRental($rentalDto->offer->getMaxUnits());
+            $availableUnitCount = $this->unitRepository->getAvailableUnitCount();
 
-            if (count($availableUnits) < $rentalDto->quantity) {
+            if ($availableUnitCount < $rentalDto->quantity) {
                 throw new Exception('Not enough units available');
             }
+
+            $availableUnits = $this->unitRepository->getAvailableUnitsForRental($rentalDto->offer->getMaxUnits());
 
             for ($j = 0; $j < $rentalDto->offer->getMaxUnits(); $j++) {
                 $rental->addUnit($this->unitRepository->findOneBy(['id' => $availableUnits[$j]]));

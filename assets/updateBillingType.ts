@@ -9,7 +9,7 @@ export default function updateBillingType(
 ): void
 {
     selectedBillingType = billingTypeSelect.querySelector('option:checked');
-    const months:   number = parseInt(selectedBillingType.getAttribute('data-months'));
+    const months:   number = parseInt(selectedBillingType.getAttribute('data-months')) ?? 1;
     const discount: number = parseInt(selectedBillingType.getAttribute('data-discount'));
 
     if (!Number.isInteger(months)) {

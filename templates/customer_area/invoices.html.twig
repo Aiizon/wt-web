@@ -8,7 +8,7 @@
     <div class="d-flex flex-column gap-2 container mx-auto px-4 py-8">
         <h1 class="text-center my-5">Mes factures</h1>
         {% for month, monthInvoices in invoices %}
-            <div class="d-flex flex-column mb-8">
+            <div class="d-flex flex-column table-responsive mb-8">
                 <h2 class="text-xl fw-semibold mb-4">{{ month|date('F Y') }}</h2>
                 <table class="table table-striped">
                     <thead>

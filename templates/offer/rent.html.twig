@@ -4,7 +4,7 @@
 
 {% block body %}
     <h1 class="text-center mt-4 pt-4">Réserver l'offre {{ offer.name }}</h1>
-    <div class="d-flex flex-row justify-content-evenly align-content-center">
+    <div class="d-flex flex-column flex-sm-row justify-content-evenly align-content-center">
         <div class="d-flex flex-column justify-content-evenly align-content-center">
             {{ form_errors(form) }}
             {{ form_start(form) }}
@@ -27,7 +27,8 @@
                 <p id="availableDisplay" class="text-success">Disponible</p>
             {{ form_end(form) }}
         </div>
-        <div class="vr"></div>
+        <div class="vr d-none d-sm-block"></div>
+        <hr class="d-block d-sm-none">
         <div class="d-flex flex-column gap-1">
             <h2 class="text-center">Résumé de votre commande</h2>
             <p>Nom de l'offre : {{ offer.name }}</p>

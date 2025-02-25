@@ -5,15 +5,16 @@
 {% block description %}Découvrez l'offre {{ offer.name }} et d'autres adaptées aux besoins de votre entreprise.{% endblock %}
 
 {% block body %}
-    <div class="d-flex flex-row justify-content-evenly align-content-center">
-        <div class="d-flex flex-column w-25 justify-content-evenly">
-            <h1>{{ offer.name }}</h1>
+    <h1 class="text-center">{{ offer.name }}</h1>
+    <div class="d-flex flex-sm-row flex-column justify-content-evenly align-content-center">
+        <div class="d-flex flex-sm-column flex-row gap-2 gap-sm-0 justify-content-evenly">
             <p id="unitAmount" data-unit-amount="{{ offer.maxUnits }}">Unité(s) : {{ offer.maxUnits }}</p>
             <p>Disponibilité : {{ offer.availability }}</p>
             <p>Bande passante : {{ offer.bandwidth }}</p>
         </div>
-        <div class="vr"></div>
-        <div class="d-flex flex-row w-75 gap-4 justify-content-evenly">
+        <div class="vr d-none d-sm-block"></div>
+        <hr class="d-block d-sm-none">
+        <div class="d-flex flex-row gap-4 justify-content-evenly">
             <div class="d-flex flex-column gap-2">
                 {{ form(billingTypeForm) }}
                 {{ form(rentQuantityForm) }}
@@ -36,11 +37,14 @@
             </div>
         </div>
     </div>
+    <hr>
     <section class="d-flex flex-column justify-content-evenly">
         <h2 class="text-center">Ce que disent nos clients</h2>
         {% if feedbackForm %}
             {{ form_errors(feedbackForm) }}
-            {{ form_start(feedbackForm, {}) }}
+            {{ form_start(feedbackForm, {
+                'attr': {'class': 'd-flex flex-column flex-sm-row gap-2 justify-content-evenly align-content-center'}
+            }) }}
                 {{ form_row(feedbackForm.title) }}
                 {{ form_row(feedbackForm.content) }}
                 {{ form_row(feedbackForm.submit) }}
@@ -68,7 +72,7 @@
                         <p class="text-center">{{ feedback.content }}</p>
                     </div>
                 {% else %}
-                    <p class="text-center">Aucun avis pour le moment, soyez notre premier !</p>
+                    <p class="text-center">Aucun avis pour le moment, soyez le premier !</p>
                 {% endfor %}
             </div>
         </div>

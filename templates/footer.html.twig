@@ -1,10 +1,10 @@
-<footer class="position-absolute bottom-0 start-0 d-flex justify-content-center align-content-center vw-100 p-1 pt-2 bg-dark">
-    <div class="d-flex flex-row flex-grow-1 justify-content-evenly">
-        <div class="d-flex flex-row gap-2 justify-content-center align-content-center w-25">
+<footer class="fixed-bottom d-flex justify-content-center align-content-center vw-100 p-1 pt-2 bg-dark">
+    <div class="d-flex flex-column flex-sm-row flex-grow-1 justify-content-center align-items-center gap-1">
+        <div class="d-flex flex-row gap-2 justify-content-center align-items-center col-10 col-sm-3">
             <img src="{{ asset('images/icon.png') }}" alt="logo de Work Together" width="30" height="30" class="d-inline-block align-text-top rounded-1">
-            <p class="text-white nowrap">© 2021 Work Together</p>
+            <p class="text-white text-center align-self-center mb-0">© 2021 Work Together</p>
         </div>
-        <div class="d-flex flex-row gap-2 justify-content-evenly align-content-center">
+        <div class="d-flex flex-row flex-wrap flex-sm-nowrap gap-2 justify-content-evenly justify-content-sm-center align-items-center col-10 col-sm-4">
             <div><a href="{{ path('home') }}" class="text-white text-decoration-none">Accueil</a></div>
             <div><a href="{{ path('home') }}" class="text-white text-decoration-none">Mentions légales</a></div>
             <div><a href="{{ path('home') }}" class="text-white text-decoration-none">CGV</a></div>

@@ -3,8 +3,6 @@ services:
   mysql:
     image: mysql:8.0.40-bookworm
     container_name: wt-mysql
-    ports:
-      - "3308:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE:-wt-app}
@@ -16,8 +14,6 @@ services:
     # In production, you may want to use a managed database service
     image: mongodb/mongodb-community-server:7.0.14-ubi9
     container_name: wt-mongodb
-    ports:
-      - "27017:27017"
     environment:
       - MONGO_INITDB_DATABASE=${MONGODB_DB:-wt-app}
 #      - MONGO_INITDB_ROOT_USERNAME=${MONGODB_USERNAME:-user}
@@ -31,8 +27,6 @@ services:
   gotenberg:
     image: gotenberg/gotenberg:8
     container_name: wt-gotenberg
-    ports:
-      - "3000:3000"
     environment:
       - DISABLE_GOOGLE_CHROME=0
 

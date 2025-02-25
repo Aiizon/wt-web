@@ -6,8 +6,11 @@ services:
 ###> doctrine/mongodb-odm-bundle ###
   mongodb:
     ports:
-      - "27017"
+      - "27017:27017"
 ###< doctrine/mongodb-odm-bundle ###
+  gotenberg:
+    ports:
+      - "3000:3000"
   app:
     ports:
       - "8006:80"

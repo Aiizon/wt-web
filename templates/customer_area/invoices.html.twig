@@ -6,7 +6,7 @@
 
 {% block body %}
     <div class="d-flex flex-column gap-2 container mx-auto px-4 py-8">
-        <h1 class="align-self-center text-2xl fw-bold mb-6">Mes factures</h1>
+        <h1 class="text-center my-5">Mes factures</h1>
         {% for month, monthInvoices in invoices %}
             <div class="d-flex flex-column mb-8">
                 <h2 class="text-xl fw-semibold mb-4">{{ month|date('F Y') }}</h2>
@@ -37,8 +37,8 @@
                 <hr class="border-gray-300">
             {% endif %}
         {% else %}
-            <p class="text-gray-500">Aucune facture trouvée.</p>
+            <p class="text-center text-gray-500">Aucune facture trouvée.</p>
         {% endfor %}
-        <button class="align-self-center btn btn-primary" onclick="window.history.back()">Retour</button>
+        <a class="align-self-center btn btn-primary" href="{{ path('customer_area_home') }}">Retour</a>
     </div>
 {% endblock %}

@@ -28,11 +28,13 @@
                                     <a href="{{ path('customer_area_update_unit_usage', {'id': unit.id}) }}" class="btn btn-sm btn-info">Modifier l'usage</a>
                                 </td>
                             </tr>
+                        {% else %}
+                            <p class="text-center text-gray-500">Aucune unité trouvée.</p>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
-        <button class="align-self-center btn btn-primary" onclick="window.history.back()">Retour</button>
+        <a class="align-self-center btn btn-primary" href="{{ path('customer_area_home') }}">Retour</a>
     </div>
 {% endblock %}

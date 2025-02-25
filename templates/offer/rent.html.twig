@@ -27,8 +27,8 @@
                 <p id="availableDisplay" class="text-success">Disponible</p>
             {{ form_end(form) }}
         </div>
-        <div class="d-flex p-1 rounded-4 bg-dark"></div>
-        <div class="d-flex flex-column justify-content-evenly align-content-center">
+        <div class="vr"></div>
+        <div class="d-flex flex-column gap-1">
             <h2 class="text-center">Résumé de votre commande</h2>
             <p>Nom de l'offre : {{ offer.name }}</p>
             <p class="unitAmount" data-unit-amount="{{ offer.maxUnits }}">Unités contenues dans l'offre : {{ offer.maxUnits }}</p>

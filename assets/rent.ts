@@ -4,7 +4,6 @@ import checkDiscount, {DiscountResponse} from "./checkDiscount";
 
 const billingTypeSelect:   HTMLSelectElement = document.querySelector('#rent_billingType');
 let   selectedBillingType: HTMLOptionElement = billingTypeSelect.querySelector('option:checked');
-console.log(billingTypeSelect, selectedBillingType);
 const unitPriceDisplay:    HTMLElement       = document.querySelector('.unitPriceDisplay');
 const totalPriceDisplay:   HTMLElement       = document.querySelector('.totalPriceDisplay');
 const monthlyRentPrice:    number            = parseInt(document.querySelector('.monthlyPriceDisplay').getAttribute('data-rent'));
@@ -21,20 +20,19 @@ if (parameterRentalUnits) {
     rentalUnits.value = parameterRentalUnits;
 }
 
-updateBillingType(selectedBillingType, billingTypeSelect, unitPriceDisplay, totalPriceDisplay, rentalUnits, monthlyRentPrice, null);
+updateBillingType(selectedBillingType, billingTypeSelect, unitPriceDisplay, totalPriceDisplay, rentalUnits, monthlyRentPrice, null, discountDisplay);
 
 billingTypeSelect.addEventListener('change', (e: Event) => {
     e.preventDefault();
-    updateBillingType(selectedBillingType, billingTypeSelect, unitPriceDisplay, totalPriceDisplay, rentalUnits, monthlyRentPrice, null);
+    updateBillingType(selectedBillingType, billingTypeSelect, unitPriceDisplay, totalPriceDisplay, rentalUnits, monthlyRentPrice, null, discountDisplay);
 });
 
 updateAvailability(rentalUnits, offerUnitAmount, null, availableDisplay, submitButton);
 
 rentalUnits.addEventListener('change', (e: Event) => {
-    console.log('rentalUnits change event');
     e.preventDefault();
     selectedBillingType = billingTypeSelect.querySelector('option:checked');
-    updateBillingType(selectedBillingType, billingTypeSelect, unitPriceDisplay, totalPriceDisplay, rentalUnits, monthlyRentPrice, null);
+    updateBillingType(selectedBillingType, billingTypeSelect, unitPriceDisplay, totalPriceDisplay, rentalUnits, monthlyRentPrice, null, discountDisplay);
     updateAvailability(rentalUnits, offerUnitAmount, null, availableDisplay, submitButton);
 });
 
@@ -43,7 +41,13 @@ checkDiscountButton.addEventListener('click', async (e: MouseEvent) => {
     let discount: DiscountResponse = await checkDiscount(discountCodeInput.value);
     if (discount.isValid) {
         discountDisplay.classList.remove('d-none');
+        discountDisplay.setAttribute('data-amount', discount.amount.toString());
+        discountDisplay.setAttribute('data-percentage', discount.isPercentage ? '1' : '0');
+        updateBillingType(selectedBillingType, billingTypeSelect, unitPriceDisplay, totalPriceDisplay, rentalUnits, monthlyRentPrice, null, discountDisplay);
     } else {
         discountDisplay.classList.add('d-none');
+        discountDisplay.removeAttribute('data-amount');
+        discountDisplay.removeAttribute('data-percentage');
+        updateBillingType(selectedBillingType, billingTypeSelect, unitPriceDisplay, totalPriceDisplay, rentalUnits, monthlyRentPrice, null, discountDisplay);
     }
 });

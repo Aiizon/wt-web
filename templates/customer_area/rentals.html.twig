@@ -40,11 +40,13 @@
                                     <td></td>
                                 {% endif %}
                             </tr>
+                        {% else %}
+                            <p class="text-center text-gray-500">Aucune location trouvée.</p>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
-        <button class="align-self-center btn btn-primary" onclick="window.history.back()">Retour</button>
+        <a class="align-self-center btn btn-primary" href="{{ path('customer_area_home') }}">Retour</a>
     </div>
 {% endblock %}

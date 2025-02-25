@@ -66,9 +66,9 @@ class OfferController extends AbstractController
         $rentQuantityForm = $this->createForm(RentQuantityType::class);
 
         if ($this->isGranted('ROLE_ADMIN')) {
-            $feedbacks = $this->documentManager->getRepository(Feedback::class)->findBy(['offerId' => $offer->getId()]);
+            $feedbacks = [];// $this->documentManager->getRepository(Feedback::class)->findBy(['offerId' => $offer->getId()]);
         } else {
-            $feedbacks = $this->documentManager->getRepository(Feedback::class)->findBy(['offerId' => $offer->getId(), 'isVisible' => true]);
+            $feedbacks = [];// $this->documentManager->getRepository(Feedback::class)->findBy(['offerId' => $offer->getId(), 'isVisible' => true]);
         }
 
         if ($this->getUser()) {

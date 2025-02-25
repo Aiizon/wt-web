@@ -4,6 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="{% block description %}Work Together, louez des unités en datacenter en 3 clics !{% endblock %}">
+        <link rel="icon" href="{{ asset('images/favicon.ico') }}">
         <title>{% block title %}{% endblock %} - Work Together</title>
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
@@ -18,5 +19,6 @@
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }}
         {% endblock %}
+        {{ include('footer.html.twig') }}
     </body>
 </html>

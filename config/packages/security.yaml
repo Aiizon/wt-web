@@ -44,6 +44,7 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
+        - { path: ^/images, roles: PUBLIC_ACCESS }
         - { path: ^/invoice/.+/generate$, roles: PUBLIC_ACCESS, ip: [127.0.0.1] }
         - { path: ^/invoice/.+/generate$, roles: PUBLIC_ACCESS, ip: [::1] }
         - { path: ^/me, roles: ROLE_USER }

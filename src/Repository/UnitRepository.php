@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Customer;
 use App\Entity\Unit;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Exception;
@@ -43,7 +44,7 @@ class UnitRepository extends ServiceEntityRepository
      * Gets an array of available units for rental.
      * @throws Exception
      */
-    public function getAvailableUnitsForRental(int $quantity)
+    public function getAvailableUnitsForRental(int $quantity): array
     {
         $query = '
         SELECT u.id
@@ -64,7 +65,7 @@ class UnitRepository extends ServiceEntityRepository
             SELECT ru.unit_id
             FROM rental r
             INNER JOIN rental_unit ru ON r.id = ru.rental_id
-            WHERE r.rental_end_date is null
+            WHERE (r.rental_end_date is null OR r.rental_end_date < NOW())
         )
         AND EXISTS (
             SELECT 1
@@ -79,6 +80,66 @@ class UnitRepository extends ServiceEntityRepository
         $result = $stmt->executeQuery()->fetchAllAssociative();
 
         return array_map(fn($unit) => $unit['id'], $result);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function countCustomerUnits(Customer $customer): int
+    {
+        $query = '
+            SELECT COUNT(ru.unit_id)
+            FROM rental r
+            INNER JOIN rental_unit ru ON r.id = ru.rental_id
+            WHERE (r.rental_end_date is null OR r.rental_end_date < NOW())
+            AND r.customer_id = :customer
+        ';
+
+        $stmt = $this->getEntityManager()->getConnection()->prepare($query);
+        $stmt->bindValue('customer', $customer->getId());
+        return $stmt->executeQuery()->fetchOne();
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function countCustomerUnitsByStatus(Customer $customer, int $status): int
+    {
+        $query = '
+            SELECT COUNT(ru.unit_id)
+            FROM rental r
+            INNER JOIN rental_unit ru ON r.id = ru.rental_id
+            INNER JOIN unit u ON ru.unit_id = u.id
+            WHERE (r.rental_end_date is null OR r.rental_end_date < NOW())
+            AND r.customer_id = :customer
+            AND u.status = :status
+        ';
+
+        $stmt = $this->getEntityManager()->getConnection()->prepare($query);
+        $stmt->bindValue('customer', $customer->getId());
+        $stmt->bindValue('status', $status);
+        return $stmt->executeQuery()->fetchOne();
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function countCustomerUnitsByStarted(Customer $customer, bool $isStarted): int
+    {
+        $query = '
+            SELECT COUNT(ru.unit_id)
+            FROM rental r
+            INNER JOIN rental_unit ru ON r.id = ru.rental_id
+            INNER JOIN unit u ON ru.unit_id = u.id
+            WHERE (r.rental_end_date is null OR r.rental_end_date < NOW())
+            AND r.customer_id = :customer
+            AND u.is_started = :started
+        ';
+
+        $stmt = $this->getEntityManager()->getConnection()->prepare($query);
+        $stmt->bindValue('customer', $customer->getId());
+        $stmt->bindValue('started', $isStarted ? '1' : '0');
+        return $stmt->executeQuery()->fetchOne();
     }
 
     //    /**

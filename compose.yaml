@@ -4,7 +4,7 @@ services:
     image: mysql:8.0.40-bookworm
     container_name: wt-mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=${MYSQL_DATABASE:-wt-app}
     volumes:
       - mysql_data:/var/lib/mysql:rw
@@ -38,9 +38,10 @@ services:
     environment:
       - APP_ENV=${APP_ENV:-prod}
       - APP_SECRET=${APP_SECRET:-BhR0ow4Y689h2HynewZUTU8kAO3yNEZD}
-      - DATABASE_URL=mysql://root:${MYSQL_ROOT_PASSWORD}@mysql/${MYSQL_DATABASE:-wt-app}?serverVersion=8.0.40&charset=utf8mb4
+      - DATABASE_URL=mysql://root:root@mysql/${MYSQL_DATABASE:-wt-app}?serverVersion=8.0.40&charset=utf8mb4
       - MONGODB_URL=mongodb://${MONGODB_USERNAME:-user}:${MONGODB_PASSWORD:-password}@mongodb/?authSource=admin
       - MONGODB_DB=${MONGODB_DB:-wt-app}
+      - GOTENBERG_URL=http://gotenberg
     depends_on:
       - mongodb
       - gotenberg

@@ -10,6 +10,10 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: UnitRepository::class)]
 class Unit
 {
+    public static int $OK = 1;
+    public static int $KO = 2;
+    public static int $MAINTENANCE = 3;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -26,6 +30,12 @@ class Unit
 
     #[ORM\ManyToOne]
     private ?UnitUsage $unitUsage = null;
+
+    #[ORM\Column(nullable: false)]
+    private ?bool $isStarted = false;
+
+    #[ORM\Column(nullable: false)]
+    private ?int $status = 2;
 
     #[ORM\ManyToOne(inversedBy: 'units')]
     #[ORM\JoinColumn(nullable: false)]
@@ -98,6 +108,27 @@ class Unit
 
         return $this;
     }
+
+    public function getIsStarted(): ?bool
+    {
+        return $this->isStarted;
+    }
+
+    public function setIsStarted(?bool $isStarted): void
+    {
+        $this->isStarted = $isStarted;
+    }
+
+    public function getStatus(): ?int
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?int $status): void
+    {
+        $this->status = $status;
+    }
+    
 
     public function getBay(): ?Bay
     {

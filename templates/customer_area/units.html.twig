@@ -5,8 +5,25 @@
 {% block description %}Accédez à votre espace client pour gérer vos offres et vos factures.{% endblock %}
 
 {% block body %}
-    <div class="d-flex flex-column container">
+    <div class="d-flex flex-column container my-5 py-5">
         <h1 class="text-center my-5">Mes unités</h1>
+        <hr>
+        <h2 class="text-center">Statistiques</h2>
+        <div class="d-flex flex-row justify-content-evenly row">
+            <div class="d-flex flex-column justify-content-center col">
+                <span>Total d'unités : {{ stats.totalUnits }}</span>
+            </div>
+            <div class="d-flex flex-column justify-content-center col">
+                <span>Allumées : {{ stats.on }}</span>
+                <span>Éteintes : {{ stats.off }}</span>
+            </div>
+            <div class="d-flex flex-column justify-content-center col">
+                <span>OK : {{ stats.ok }}</span>
+                <span>KO : {{ stats.ko }}</span>
+                <span>Maintenance : {{ stats.maintenance }}</span>
+            </div>
+        </div>
+        <hr/>
         <div class="row">
             <div class="col-12 table-responsive">
                 <table class="table table-striped">
@@ -14,6 +31,8 @@
                         <tr>
                             <th>Unité</th>
                             <th>Localisation</th>
+                            <th>Statut</th>
+                            <th>Etat</th>
                             <th>Usage</th>
                             <th>Actions</th>
                         </tr>
@@ -23,9 +42,21 @@
                             <tr {% if unit.unitUsage %}style="background-color: {{ unit.unitUsage.color }} !important"{% endif %}>
                                 <td>{{ unit.id }}</td>
                                 <td>{{ unit.name }}, {{ unit.bay.name }} ({{ unit.bay.location }})</td>
+                                <td>{{ unit.isStarted ? 'Allumée' : 'Eteinte' }}</td>
+                                <td>
+                                    {% if unit.status == 1 %}
+                                        OK
+                                    {% elseif unit.status == 2 %}
+                                        KO
+                                    {% elseif unit.status == 3 %}
+                                        Maintenance
+                                    {% else %}
+                                        Inconnu
+                                    {% endif %}
+                                </td>
                                 <td>{{ unit.unitUsage ? unit.unitUsage.name : '-' }}</td>
                                 <td>
-                                    <a href="{{ path('customer_area_update_unit_usage', {'id': unit.id}) }}" class="btn btn-sm btn-info">Modifier l'usage</a>
+                                    <a href="{{ path('customer_area_update_unit_config', {'id': unit.id}) }}" class="btn btn-sm btn-info">Modifier l'usage</a>
                                 </td>
                             </tr>
                         {% else %}

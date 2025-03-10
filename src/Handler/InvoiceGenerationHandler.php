@@ -9,10 +9,8 @@ use Gotenberg\Exceptions\GotenbergApiErrored;
 use Gotenberg\Exceptions\NoOutputFileInResponse;
 use Gotenberg\Gotenberg;
 use Gotenberg\Stream;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Twig\Environment;
-use Twig\Error\LoaderError;
-use Twig\Error\RuntimeError;
-use Twig\Error\SyntaxError;
 
 class InvoiceGenerationHandler
 {
@@ -24,6 +22,7 @@ class InvoiceGenerationHandler
     (
         EntityManagerInterface $entityManager,
         Environment            $twig,
+        #[Autowire('%env(GOTENBERG_URL)%')]
         string                 $appUrl = 'https://localhost:8000'
     ) {
         $this->entityManager = $entityManager;

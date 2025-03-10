@@ -4,6 +4,7 @@ namespace App\Handler;
 
 use App\DTO\RentalDto;
 use App\Entity\Rental;
+use App\Entity\Unit;
 use App\Repository\DiscountRepository;
 use App\Repository\UnitRepository;
 use DateTimeImmutable;
@@ -53,12 +54,21 @@ class RentalCreationHandler
             $availableUnits = $this->unitRepository->getAvailableUnitsForRental($rentalDto->offer->getMaxUnits());
 
             for ($j = 0; $j < $rentalDto->offer->getMaxUnits(); $j++) {
-                $rental->addUnit($this->unitRepository->findOneBy(['id' => $availableUnits[$j]]));
+                $unit = $this->unitRepository->findOneBy(['id' => $availableUnits[$j]]);
+
+                $unit->setIsStarted(true);
+                $unit->setStatus(Unit::$OK);
+                $unit->setUnitUsage(null);
+                $rental->addUnit($unit);
+
+                $this->entityManager->flush($unit);
+
                 unset($availableUnits[$j]);
             }
 
             $this->entityManager->persist($rental);
+            $this->entityManager->flush();
         }
-        $this->entityManager->flush();
+
     }
 }

@@ -3,21 +3,26 @@
 namespace App\Controller;
 
 use App\DTO\TokenCreationDTO;
+use App\DTO\UnitsStatsDTO;
 use App\Form\CustomerUpdateType;
 use App\Form\TokenCreationType;
-use App\Form\UnitUsageType;
+use App\Form\UnitConfigType;
 use App\Repository\CustomerRepository;
 use App\Repository\InvoiceRepository;
 use App\Repository\RentalRepository;
 use App\Repository\TokenRepository;
 use App\Repository\UnitRepository;
+use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Random\RandomException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Uid\Uuid;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\env;
 
 #[Route('/me')]
 class CustomerAreaController extends AbstractController
@@ -65,7 +70,8 @@ class CustomerAreaController extends AbstractController
     #[Route('/profile/edit', name: 'customer_area_profile_edit')]
     public function profileEdit(Request $request): Response
     {
-        $customer = $this->getUser();
+        $user = $this->getUser();
+        $customer = $this->customerRepository->findOneBy(['email' => $user->getUserIdentifier()]);
 
         $form = $this->createForm(CustomerUpdateType::class, $customer, [
             'attr' => [
@@ -75,6 +81,25 @@ class CustomerAreaController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $pictureFile = $form->get('picture')->getData();
+
+            if ($pictureFile) {
+                $uuid = Uuid::v4();
+                $filename = $uuid->toString() . '.' . $pictureFile->guessExtension();
+
+                try {
+                    $pictureFile->move('images/upload', $filename);
+                } catch (FileException $e) {
+                    $this->addFlash('error', 'Erreur lors de la copie du fichier : ' . $e->getMessage());
+                }
+
+                if ($customer->getPicturePath()) {
+                    unlink('images/upload/' . $customer->getPicturePath());
+                }
+
+                $customer->setPicturePath($filename);
+            }
+
             if ($form->get('plainPassword')->getData()) {
                 $customer->setPassword(
                     $this->passwordHasher->hashPassword($customer, $form->get('plainPassword')->getData())
@@ -210,6 +235,9 @@ class CustomerAreaController extends AbstractController
         ]);
     }
 
+    /**
+     * @throws Exception
+     */
     #[Route('/units', name: 'customer_area_units')]
     public function units(): Response
     {
@@ -226,12 +254,15 @@ class CustomerAreaController extends AbstractController
             $units = array_merge($units, $rental->getUnits()->toArray());
         }
 
+        $stats = UnitsStatsDTO::create($customer, $this->unitRepository);
+
         return $this->render('customer_area/units.html.twig', [
             'units' => $units,
+            'stats' => $stats
         ]);
     }
 
-    #[Route('/unit/{id}/usage', name: 'customer_area_update_unit_usage', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    #[Route('/unit/{id}/config', name: 'customer_area_update_unit_config', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function updateUnitUsage(Request $request, int $id): Response
     {
         $user     = $this->getUser();
@@ -252,7 +283,7 @@ class CustomerAreaController extends AbstractController
             throw $this->createNotFoundException('Unité non trouvée');
         }
 
-        $form = $this->createForm(UnitUsageType::class, $unit);
+        $form = $this->createForm(UnitConfigType::class, $unit);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -261,7 +292,7 @@ class CustomerAreaController extends AbstractController
             return $this->redirectToRoute('customer_area_units');
         }
 
-        return $this->render('customer_area/unit_usage.html.twig', [
+        return $this->render('customer_area/unit_config.html.twig', [
             'form' => $form->createView(),
             'unit' => $unit
         ]);

@@ -82,7 +82,7 @@ class InvoiceGenerationHandler
             ->html($this->twig->render('email/invoice.html.twig', [
                 'invoice' => $invoice,
             ]))
-            ->attachFromPath($location . '/' . $file, `invoice-${invoice->getNumber()}.pdf`)
+            ->attachFromPath($location . '/' . $file, `invoice-{$invoice->getNumber()}.pdf`)
         ;
 
         $this->mailer->send($email);

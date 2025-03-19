@@ -1,0 +1,10 @@
+<h1>Vous avez reçu une nouvelle facture.</h1>
+
+<p>
+    La facture {{ invoice.number }} a été émise le {{ invoice.date|date('d/m/Y') }} pour la commande N°{{ invoice.rental.id }}.
+    Vous pouvez consulter votre facture en accédant à votre espace client, ou en pièce jointe à ce courriel.
+</p>
+
+<p>
+    Merci de votre confiance.
+</p>

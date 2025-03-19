@@ -10,21 +10,27 @@ use Gotenberg\Exceptions\NoOutputFileInResponse;
 use Gotenberg\Gotenberg;
 use Gotenberg\Stream;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use Twig\Environment;
 
 class InvoiceGenerationHandler
 {
+    private MailerInterface        $mailer;
     private EntityManagerInterface $entityManager;
     private Environment            $twig;
     private string                 $appUrl;
 
     public function __construct
     (
+        MailerInterface        $mailer,
         EntityManagerInterface $entityManager,
         Environment            $twig,
         #[Autowire('%env(GOTENBERG_URL)%')]
         string                 $appUrl = 'https://localhost:8000'
     ) {
+        $this->mailer        = $mailer;
         $this->entityManager = $entityManager;
         $this->twig          = $twig;
         $this->appUrl        = $appUrl;
@@ -34,6 +40,7 @@ class InvoiceGenerationHandler
      * @throws NoOutputFileInResponse
      * @throws GotenbergApiErrored
      * @throws Exception
+     * @throws TransportExceptionInterface
      */
     public function handle(Invoice $invoice): void
     {
@@ -67,6 +74,18 @@ class InvoiceGenerationHandler
 
         $this->entityManager->persist($invoice);
         $this->entityManager->flush();
+
+        $email = (new Email())
+            ->from('automate@worktogether.com')
+            ->to($invoice->getRental()->getCustomer()->getEmail())
+            ->subject('Facture pour la location N°' . $invoice->getRental()->getId())
+            ->html($this->twig->render('email/invoice.html.twig', [
+                'invoice' => $invoice,
+            ]))
+            ->attachFromPath($location . '/' . $file, `invoice-${invoice->getNumber()}.pdf`)
+        ;
+
+        $this->mailer->send($email);
 
         unlink($location . '/' . $file);
     }

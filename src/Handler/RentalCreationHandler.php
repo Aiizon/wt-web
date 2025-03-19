@@ -10,28 +10,36 @@ use App\Repository\UnitRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class RentalCreationHandler
 {
-    private EntityManagerInterface $entityManager;
-    private UnitRepository         $unitRepository;
-    private DiscountRepository     $discountRepository;
+    private EntityManagerInterface   $entityManager;
+    private UnitRepository           $unitRepository;
+    private DiscountRepository       $discountRepository;
+    private InvoiceGenerationHandler $generationHandler;
+    private InvoiceCreationHandler   $creationHandler;
 
     public function __construct
     (
-        EntityManagerInterface $entityManager,
-        UnitRepository         $unitRepository,
-        DiscountRepository     $discountRepository
+        EntityManagerInterface   $entityManager,
+        UnitRepository           $unitRepository,
+        DiscountRepository       $discountRepository,
+        InvoiceGenerationHandler $generationHandler,
+        InvoiceCreationHandler   $creationHandler
     )
     {
         $this->entityManager      = $entityManager;
         $this->unitRepository     = $unitRepository;
         $this->discountRepository = $discountRepository;
+        $this->generationHandler  = $generationHandler;
+        $this->creationHandler    = $creationHandler;
     }
 
     /**
      * @throws \Doctrine\DBAL\Exception
      * @throws Exception
+     * @throws TransportExceptionInterface
      */
     public function handle(RentalDto $rentalDto): void
     {
@@ -68,6 +76,9 @@ class RentalCreationHandler
 
             $this->entityManager->persist($rental);
             $this->entityManager->flush();
+
+            $invoice = $this->creationHandler->handle($rental, new DateTimeImmutable('now'));
+            $this->generationHandler->handle($invoice);
         }
 
     }

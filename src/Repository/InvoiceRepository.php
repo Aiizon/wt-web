@@ -6,6 +6,7 @@ use App\Entity\Customer;
 use App\Entity\Invoice;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use IntlDateFormatter;
 
 /**
  * @extends ServiceEntityRepository<Invoice>
@@ -30,10 +31,32 @@ class InvoiceRepository extends ServiceEntityRepository
             ->getResult();
 
         $grouped = [];
+        
+        $formatter = new IntlDateFormatter(
+            'fr_FR',
+            IntlDateFormatter::NONE,
+            IntlDateFormatter::NONE,
+            null,
+            null,
+            'MMMM yyyy'
+        );
+        
         foreach ($invoices as $invoice) {
             $month = $invoice->getDate()->format('Y-m');
-            $grouped[$month][] = $invoice;
+            $translatedMonth = $formatter->format($invoice->getDate());
+            $translatedMonth = mb_convert_case($translatedMonth, MB_CASE_TITLE, 'UTF-8');
+
+            if (!isset($grouped[$month])) {
+                $grouped[$month] = [
+                    'label' => $translatedMonth,
+                    'invoices' => []
+                ];
+            }
+            
+            $grouped[$month]['invoices'][] = $invoice;
         }
+        
+        ksort($grouped);
 
         return $grouped;
     }

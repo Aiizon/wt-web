@@ -7,9 +7,9 @@
 {% block body %}
     <div class="d-flex flex-column gap-2 container mx-auto px-4 py-8">
         <h1 class="text-center my-5">Mes factures</h1>
-        {% for month, monthInvoices in invoices %}
+        {% for monthInfo in invoices %}
             <div class="d-flex flex-column table-responsive mb-8">
-                <h2 class="text-xl fw-semibold mb-4">{{ month|date('F Y') }}</h2>
+                <h2 class="text-xl fw-semibold mb-4">{{ monthInfo.label }}</h2>
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -19,7 +19,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for invoice in monthInvoices %}
+                        {% for invoice in monthInfo.invoices %}
                             <tr>
                                 <td>{{ invoice.number }}</td>
                                 <td>{{ invoice.date|date('d/m/Y') }}</td>

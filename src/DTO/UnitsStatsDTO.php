@@ -10,12 +10,12 @@ use Doctrine\DBAL\Exception;
 class UnitsStatsDTO
 {
     public Customer $customer;
-    public int $totalUnits;
-    public int $ok;
-    public int $ko;
-    public int $maintenance;
-    public int $on;
-    public int $off;
+    public int      $totalUnits;
+    public int      $ok;
+    public int      $ko;
+    public int      $maintenance;
+    public int      $on;
+    public int      $off;
 
     /**
      * @throws Exception
@@ -26,8 +26,6 @@ class UnitsStatsDTO
         UnitRepository $unitRepository
     ): static
     {
-        // @todo: génération de facture au début d'une commande
-        // @todo: commande avec plusieurs quantités : unités réutilisées (requête renvoie bien des unités libres ?)
         $dto = new self();
 
         $dto->customer    = $customer;

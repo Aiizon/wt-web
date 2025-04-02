@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Customer;
 use App\Entity\Rental;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -16,28 +17,36 @@ class RentalRepository extends ServiceEntityRepository
         parent::__construct($registry, Rental::class);
     }
 
-    //    /**
-    //     * @return Rental[] Returns an array of Rental objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('r')
-    //            ->andWhere('r.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('r.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function findActiveUnitsByCustomer(Customer $customer): array
+    {
+        $rentals = $this->createQueryBuilder('r')
+            ->andWhere('r.customer = :customer')
+            ->andWhere('r.rentalEndDate IS NULL OR r.rentalEndDate > CURRENT_DATE()')
+            ->setParameter('customer', $customer)
+            ->getQuery()
+            ->getResult()
+        ;
 
-    //    public function findOneBySomeField($value): ?Rental
-    //    {
-    //        return $this->createQueryBuilder('r')
-    //            ->andWhere('r.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        $units = [];
+
+        foreach ($rentals as $rental) {
+            $units = array_merge($units, $rental->getUnits()->toArray());
+        }
+
+        $grouped = [];
+
+        foreach ($units as $unit) {
+            $bay = $unit->getBay();
+
+            if (!isset($grouped[$bay->getName()])) {
+                $grouped[$bay->getName()] = [
+                    'units' => [],
+                ];
+            }
+            
+            $grouped[$bay->getName()]['units'][] = $unit;
+        }
+        
+        return $grouped;
+    }
 }

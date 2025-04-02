@@ -26,44 +26,65 @@
         <hr/>
         <div class="row">
             <div class="col-12 table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Unité</th>
-                            <th>Localisation</th>
-                            <th>Statut</th>
-                            <th>Etat</th>
-                            <th>Usage</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for unit in units %}
-                            <tr {% if unit.unitUsage %}style="background-color: {{ unit.unitUsage.color }} !important"{% endif %}>
-                                <td>{{ unit.id }}</td>
-                                <td>{{ unit.name }}, {{ unit.bay.name }} ({{ unit.bay.location }})</td>
-                                <td>{{ unit.isStarted ? 'Allumée' : 'Eteinte' }}</td>
-                                <td>
-                                    {% if unit.status == 1 %}
-                                        OK
-                                    {% elseif unit.status == 2 %}
-                                        KO
-                                    {% elseif unit.status == 3 %}
-                                        Maintenance
-                                    {% else %}
-                                        Inconnu
-                                    {% endif %}
-                                </td>
-                                <td>{{ unit.unitUsage ? unit.unitUsage.name : '-' }}</td>
-                                <td>
-                                    <a href="{{ path('customer_area_update_unit_config', {'id': unit.id}) }}" class="btn btn-sm btn-info">Modifier l'usage</a>
-                                </td>
-                            </tr>
-                        {% else %}
-                            <p class="text-center text-gray-500">Aucune unité trouvée.</p>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                <div class="accordion" id="units-accordion">
+                    {% for bayName, bayData in bays %}
+                        <div class="accordion-item">
+                            <p class="accordion-header" id="heading-{{ bayName }}">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ bayName }}" aria-expanded="true" aria-controls="collapse-{{ bayName }}">
+                                    {{ bayName }} <span class="ms-2 badge bg-secondary"> - {{ bayData.units|length }} unité(s)</span>
+                                </button>
+                            </p>
+                            <div class="accordion-collapse collapse {% if loop.first %}show{% endif %}" id="collapse-{{ bayName }}">
+                                <div class="accordion-body">
+                                    <table class="table table-striped table-responsive mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Unité</th>
+                                                <th>Localisation</th>
+                                                <th>Statut</th>
+                                                <th>Etat</th>
+                                                <th>Usage</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for unit in bayData.units %}
+                                                <tr {% if unit.unitUsage %}style="background-color: {{ unit.unitUsage.color }} !important"{% endif %}>
+                                                    <td>{{ unit.id }}</td>
+                                                    <td>{{ unit.name }}, {{ unit.bay.name }} ({{ unit.bay.location }})</td>
+                                                    <td>{{ unit.isStarted ? 'Allumée' : 'Eteinte' }}</td>
+                                                    <td>
+                                                        {% if unit.status == 1 %}
+                                                            <span class="badge bg-success">OK</span>
+                                                        {% elseif unit.status == 2 %}
+                                                            <span class="badge bg-danger">KO</span>
+                                                        {% elseif unit.status == 3 %}
+                                                            <span class="badge bg-secondary">Maintenance</span>
+                                                        {% else %}
+                                                            Inconnu
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {% if unit.unitUsage %}
+                                                            <span class="badge" style="background-color: {{ unit.unitUsage.color }}">{{ unit.unitUsage.name }}</span>
+                                                        {% else %}
+                                                            <span class="badge bg-dark">Aucun</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        <a href="{{ path('customer_area_update_unit_config', {'id': unit.id}) }}" class="btn btn-sm btn-info">Configurer</a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p class="text-center text-muted">Aucune unité trouvée.</p>
+                    {% endfor %}
+                </div>
             </div>
         </div>
         <a class="align-self-center btn btn-primary" href="{{ path('customer_area_home') }}">Retour</a>

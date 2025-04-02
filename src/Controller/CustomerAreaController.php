@@ -244,20 +244,12 @@ class CustomerAreaController extends AbstractController
         $user = $this->getUser();
         $customer = $this->customerRepository->findOneBy(['email' => $user->getUserIdentifier()]);
 
-        $rentals = $this->rentalRepository->findBy([
-            'customer' => $customer,
-            'rentalEndDate' => null
-        ]);
-        $units = [];
-
-        foreach ($rentals as $rental) {
-            $units = array_merge($units, $rental->getUnits()->toArray());
-        }
-
+        $bays = $this->rentalRepository->findActiveUnitsByCustomer($customer);
+        
         $stats = UnitsStatsDTO::create($customer, $this->unitRepository);
-
+        
         return $this->render('customer_area/units.html.twig', [
-            'units' => $units,
+            'bays'  => $bays,
             'stats' => $stats
         ]);
     }

@@ -3,8 +3,10 @@
 namespace App\Controller\API;
 
 use App\Entity\Customer;
+use App\Repository\InterventionRepository;
 use App\Repository\RentalRepository;
 use App\Repository\TokenRepository;
+use Doctrine\DBAL\Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,16 +16,19 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/me', name: 'api_customer_area_')]
 class CustomerAreaController extends AbstractController
 {
-    private RentalRepository $rentalRepository;
-    private TokenRepository  $tokenRepository;
+    private TokenRepository        $tokenRepository;
+    private RentalRepository       $rentalRepository;
+    private InterventionRepository $interventionRepository;
     
     public function __construct
     (
-        RentalRepository $rentalRepository,
-        TokenRepository  $tokenRepository
+        TokenRepository        $tokenRepository,
+        InterventionRepository $interventionRepository,
+        RentalRepository       $rentalRepository,
     ) {
-        $this->rentalRepository = $rentalRepository;
-        $this->tokenRepository  = $tokenRepository;
+        $this->tokenRepository        = $tokenRepository;
+        $this->interventionRepository = $interventionRepository;
+        $this->rentalRepository       = $rentalRepository;
     }
     
     #[Route('/unit/status', name: 'status', methods: ['GET'])]
@@ -38,6 +43,23 @@ class CustomerAreaController extends AbstractController
         $units = $this->rentalRepository->findActiveUnitsForCustomer($checkResult);
         
         return $this->json(['units' => $units], Response::HTTP_OK, [], ['groups' => 'unit:status']);
+    }
+
+    /**
+     * @throws Exception
+     */
+    #[Route('/intervention', name: 'intervention_history', methods: ['GET'])]
+    public function interventionHistory(Request $request): JsonResponse
+    {
+        $checkResult = $this->checkToken($request);
+        
+        if ($checkResult instanceof JsonResponse) {
+            return $checkResult;
+        }
+        
+        $interventions = $this->interventionRepository->findInterventionsForCustomer($checkResult);
+        
+        return $this->json(['interventions' => $interventions], Response::HTTP_OK, [], ['groups' => 'intervention:read']);
     }
     
     private function checkToken(Request $request): JsonResponse|Customer

@@ -21,7 +21,7 @@ class Unit
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('unit:status')]
+    #[Groups(['unit:status', 'intervention:read'])]
     private ?string $name = null;
 
     /**

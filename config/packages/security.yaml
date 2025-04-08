@@ -48,6 +48,7 @@ security:
         - { path: ^/invoice/.+/generate$, roles: PUBLIC_ACCESS, ip: [127.0.0.1] }
         - { path: ^/invoice/.+/generate$, roles: PUBLIC_ACCESS, ip: [::1] }
         - { path: ^/me, roles: ROLE_USER }
+        - { path: ^/api, roles: PUBLIC_ACCESS }
         # - { path: ^/admin, roles: ROLE_ADMIN }
 
 when@test:

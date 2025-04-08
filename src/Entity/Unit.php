@@ -6,6 +6,7 @@ use App\Repository\UnitRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: UnitRepository::class)]
 class Unit
@@ -20,6 +21,7 @@ class Unit
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['unit:status', 'intervention:read'])]
     private ?string $name = null;
 
     /**
@@ -32,13 +34,16 @@ class Unit
     private ?UnitUsage $unitUsage = null;
 
     #[ORM\Column(nullable: false)]
+    #[Groups('unit:status')]
     private ?bool $isStarted = false;
 
     #[ORM\Column(nullable: false)]
+    #[Groups('unit:status')]
     private ?int $status = 2;
 
     #[ORM\ManyToOne(inversedBy: 'units')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups('unit:status')]
     private ?Bay $bay = null;
 
     /**

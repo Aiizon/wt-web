@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: InterventionRepository::class)]
 class Intervention
@@ -17,18 +18,22 @@ class Intervention
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups('intervention:read')]
     private ?string $comment = null;
 
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE)]
+    #[Groups('intervention:read')]
     private ?\DateTimeImmutable $startDate = null;
 
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: true)]
+    #[Groups('intervention:read')]
     private ?\DateTimeImmutable $endDate = null;
 
     /**
      * @var Collection<int, Unit>
      */
     #[ORM\ManyToMany(targetEntity: Unit::class, mappedBy: 'interventions')]
+    #[Groups('intervention:read')]
     private Collection $units;
 
     public function __construct()

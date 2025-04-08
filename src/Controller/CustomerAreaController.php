@@ -244,7 +244,7 @@ class CustomerAreaController extends AbstractController
         $user = $this->getUser();
         $customer = $this->customerRepository->findOneBy(['email' => $user->getUserIdentifier()]);
 
-        $bays = $this->rentalRepository->findActiveUnitsByCustomer($customer);
+        $bays = $this->rentalRepository->findActiveUnitsForCustomerByBay($customer);
         
         $stats = UnitsStatsDTO::create($customer, $this->unitRepository);
         

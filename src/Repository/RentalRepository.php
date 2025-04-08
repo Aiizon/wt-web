@@ -17,7 +17,7 @@ class RentalRepository extends ServiceEntityRepository
         parent::__construct($registry, Rental::class);
     }
 
-    public function findActiveUnitsByCustomer(Customer $customer): array
+    public function findActiveUnitsForCustomerByBay(Customer $customer): array
     {
         $rentals = $this->createQueryBuilder('r')
             ->andWhere('r.customer = :customer')
@@ -48,5 +48,24 @@ class RentalRepository extends ServiceEntityRepository
         }
         
         return $grouped;
+    }
+
+    public function findActiveUnitsForCustomer(Customer $customer): array
+    {
+        $rentals = $this->createQueryBuilder('r')
+            ->andWhere('r.customer = :customer')
+            ->andWhere('r.rentalEndDate IS NULL OR r.rentalEndDate > CURRENT_DATE()')
+            ->setParameter('customer', $customer)
+            ->getQuery()
+            ->getResult()
+        ;
+
+        $units = [];
+
+        foreach ($rentals as $rental) {
+            $units = array_merge($units, $rental->getUnits()->toArray());
+        }
+        
+        return $units;
     }
 }

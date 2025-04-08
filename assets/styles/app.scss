@@ -76,11 +76,6 @@ body {
     }
 }
 
-.main {
-    flex: 1 0 auto;
-    padding: 2rem 0;
-}
-
 footer {
     background: linear-gradient(to right, darken($primary, 15%), $dark) !important;
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
@@ -201,24 +196,25 @@ h1, h2, h3, h4, h5, h6 {
 
     &:after {
         position: absolute;
-        bottom: 0;
-        left: 50%;
+        bottom: -5px;
+        left: 45%;
         content: '';
-        width: 50px;
+        width: 10%;
         height: 3px;
         background: linear-gradient(to right, $primary, $secondary);
     }
 }
 
 .main {
+    flex: 1 0 auto;
+    padding: 2rem 0;
     min-height: 80vh;
     margin-top: 5vh;
 }
 
 @media (max-width: 768px) {
     .main {
-        margin-top: 12vh;
-        margin-bottom: 12vh;
+        margin: 2vh auto;
     }
 
     body {

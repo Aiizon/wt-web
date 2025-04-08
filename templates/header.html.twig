@@ -17,7 +17,8 @@
                     <li class="d-flex flex-row align-items-center justify-content-center nav-item">
                         <a class="nav-link" href="{{ path('logout') }}">Déconnection</a>
                     </li>
-                    <hr class="vr bg-dark-subtle mx-2"/>
+                    <hr class="vr bg-dark-subtle mx-2 d-none d-md-block"/>
+                    <hr class="bg-dark-subtle mx-2 d-sm-none d-block"/>
                     {% if app.user.picturePath %}
                         <img src="/images/upload/{{ app.user.picturePath }}" alt="" width="30" height="30" class="rounded overflow-hidden align-self-center">
                     {% endif %}

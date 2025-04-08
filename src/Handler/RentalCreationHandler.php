@@ -61,7 +61,7 @@ class RentalCreationHandler
 
             $availableUnits = $this->unitRepository->getAvailableUnitsForRental($rentalDto->offer->getMaxUnits());
 
-            for ($j = 0; $j < $rentalDto->offer->getMaxUnits(); $j++) {
+            for ($j = 0; $j < $rentalDto->offer->getMaxUnits() - 1; $j++) {
                 $unit = $this->unitRepository->findOneBy(['id' => $availableUnits[$j]]);
 
                 $unit->setIsStarted(true);

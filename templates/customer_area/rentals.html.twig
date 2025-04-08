@@ -35,7 +35,7 @@
                                 <td>{{ rental.units|length }}</td>
                                 <td>{{ rental.totalRentPrice }} €</td>
                                 {% if rental.doRenew %}
-                                    <td><a href="{{ path('customer_area_cancel_rental', {'id': rental.id}) }}">Annuler</a></td>
+                                    <td><a href="{{ path('customer_area_cancel_rental', {'id': rental.id}) }}">Résilier</a></td>
                                 {% else %}
                                     <td></td>
                                 {% endif %}

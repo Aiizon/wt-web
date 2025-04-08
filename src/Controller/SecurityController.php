@@ -17,29 +17,49 @@ use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
+use Symfony\Component\Security\Http\Authenticator\FormLoginAuthenticator;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class SecurityController extends AbstractController
 {
-    private EmailVerifier $emailVerifier;
+    private EmailVerifier               $emailVerifier;
+    private AuthenticationUtils         $authenticationUtils;
+    private UserPasswordHasherInterface $passwordHasher;
+    private EntityManagerInterface      $entityManager;
+    private TranslatorInterface         $translator;
+    private CustomerRepository          $customerRepository;
 
-    public function __construct(EmailVerifier $emailVerifier) {
-        $this->emailVerifier = $emailVerifier;
+    public function __construct
+    (
+        EmailVerifier               $emailVerifier,
+        AuthenticationUtils         $authenticationUtils,
+        UserPasswordHasherInterface $userPasswordHasher,
+        EntityManagerInterface      $entityManager,
+        TranslatorInterface         $translator,
+        CustomerRepository          $customerRepository,
+    ) {
+        $this->emailVerifier          = $emailVerifier;
+        $this->authenticationUtils    = $authenticationUtils;
+        $this->passwordHasher         = $userPasswordHasher;
+        $this->entityManager          = $entityManager;
+        $this->translator             = $translator;
+        $this->customerRepository     = $customerRepository;
     }
 
     #[Route(path: '/login', name: 'login')]
-    public function login(AuthenticationUtils $authenticationUtils): Response
+    public function login(): Response
     {
         // get the login error if there is one
-        $error = $authenticationUtils->getLastAuthenticationError();
+        $error = $this->authenticationUtils->getLastAuthenticationError();
 
         // last username entered by the user
-        $lastUsername = $authenticationUtils->getLastUsername();
+        $lastUsername = $this->authenticationUtils->getLastUsername();
 
         return $this->render('security/login.html.twig', [
             'last_username' => $lastUsername,
-            'error' => $error,
+            'error'         => $error,
         ]);
     }
 
@@ -51,7 +71,7 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/register', name: 'register')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
+    public function register(Request $request): Response
     {
         $customer = new Customer();
         $form = $this->createForm(RegistrationFormType::class, $customer);
@@ -62,10 +82,10 @@ class SecurityController extends AbstractController
             $plainPassword = $form->get('plainPassword')->getData();
 
             // encode the plain password
-            $customer->setPassword($userPasswordHasher->hashPassword($customer, $plainPassword));
+            $customer->setPassword($this->passwordHasher->hashPassword($customer, $plainPassword));
 
-            $entityManager->persist($customer);
-            $entityManager->flush();
+            $this->entityManager->persist($customer);
+            $this->entityManager->flush();
 
             // generate a signed url and email it to the user
             $this->emailVerifier->sendEmailConfirmation('verify_email', $customer,
@@ -76,9 +96,9 @@ class SecurityController extends AbstractController
                     ->htmlTemplate('security/confirmation_email.html.twig')
             );
 
-            // do anything else you need here, like send an email
+            $this->addFlash('success', 'Un e-mail de confirmation a été envoyé à votre adresse e-mail. Veuillez le vérifier.');
 
-            return $this->redirectToRoute('home');
+            return $this->redirectToRoute('login');
         }
 
         return $this->render('security/register.html.twig', [
@@ -87,7 +107,7 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/verify/email', name: 'verify_email')]
-    public function verifyUserEmail(Request $request, TranslatorInterface $translator, CustomerRepository $customerRepository): Response
+    public function verifyUserEmail(Request $request): Response
     {
         $id = $request->query->get('id');
 
@@ -95,7 +115,7 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('register');
         }
 
-        $customer = $customerRepository->find($id);
+        $customer = $this->customerRepository->find($id);
 
         if (null === $customer) {
             return $this->redirectToRoute('register');
@@ -105,7 +125,7 @@ class SecurityController extends AbstractController
         try {
             $this->emailVerifier->handleEmailConfirmation($request, $customer);
         } catch (VerifyEmailExceptionInterface $exception) {
-            $this->addFlash('verify_email_error', $translator->trans($exception->getReason(), [], 'VerifyEmailBundle'));
+            $this->addFlash('verify_email_error', $this->translator->trans($exception->getReason(), [], 'VerifyEmailBundle'));
 
             return $this->redirectToRoute('register');
         }

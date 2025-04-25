@@ -43,7 +43,7 @@ class RentalCreationHandler
      */
     public function handle(RentalDto $rentalDto): void
     {
-        for ($i = 0; $i < $rentalDto->quantity; $i++) {
+        for ($i = 0; $i < $rentalDto->quantity - 1; $i++) {
             $rental = new Rental();
             $rental->setMonthlyRentPrice($rentalDto->offer->getMonthlyRentPrice());
             $rental->setDoRenew($rentalDto->doRenew);

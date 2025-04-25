@@ -20,7 +20,7 @@
             </div>
             <div class="d-flex flex-column flex-sm-row justify-content-start justify-content-sm-evenly align-items-center gap-2">
                 {% for offer in offers %}
-                    <div class="d-flex flex-column justify-content-evenly rounded border border-1 border-dark-subtle p-2 col-10 col-sm-5 col-sm-3 offer">
+                    <div class="d-flex flex-column justify-content-evenly rounded border border-1 border-dark-subtle p-2 col-10 col-5 col-sm-3 offer">
                         <div class="mt-1">{{ offer.name }}</div>
                         <div class="mt-1">{{ offer.maxUnits }} unités</div>
                         <div class="monthlyPriceDisplay mt-1" data-rent="{{ offer.monthlyRentPrice }}">{{ offer.monthlyRentPrice }}€/mois</div>

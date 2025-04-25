@@ -13,22 +13,27 @@ use App\Form\RentType;
 use App\Handler\CustomerDataEditionHandler;
 use App\Handler\RentalCreationHandler;
 use App\Repository\BillingTypeRepository;
+use App\Repository\CustomerRepository;
 use App\Repository\OfferRepository;
 use App\Repository\UnitRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Throwable;
 
 class OfferController extends AbstractController
 {
     private OfferRepository            $offerRepository;
     private BillingTypeRepository      $billingTypeRepository;
     private UnitRepository             $unitRepository;
+    private CustomerRepository         $customerRepository;
     private CustomerDataEditionHandler $customerDataEditionHandler;
     private RentalCreationHandler      $rentalCreationHandler;
     private DocumentManager            $documentManager;
@@ -38,6 +43,7 @@ class OfferController extends AbstractController
         OfferRepository            $offerRepository,
         BillingTypeRepository      $billingTypeRepository,
         UnitRepository             $unitRepository,
+        CustomerRepository         $customerRepository,
         CustomerDataEditionHandler $customerDataEditionHandler,
         RentalCreationHandler      $rentalCreationHandler,
         DocumentManager            $documentManager
@@ -46,6 +52,7 @@ class OfferController extends AbstractController
         $this->offerRepository            = $offerRepository;
         $this->billingTypeRepository      = $billingTypeRepository;
         $this->unitRepository             = $unitRepository;
+        $this->customerRepository         = $customerRepository;
         $this->customerDataEditionHandler = $customerDataEditionHandler;
         $this->rentalCreationHandler      = $rentalCreationHandler;
         $this->documentManager            = $documentManager;
@@ -106,7 +113,7 @@ class OfferController extends AbstractController
     /**
      * @throws MappingException
      * @throws MongoDBException
-     * @throws LockException
+     * @throws Throwable
      */
     #[Route('/offer/{offerId}/feedback/{feedbackId}/toggle', name: 'toggle_feedback', requirements: ['id' => '\d+', 'feedbackId' => '^[0-9a-fA-F]{24}$'])]
     public function toggleFeedback(string $feedbackId): Response
@@ -127,10 +134,15 @@ class OfferController extends AbstractController
         return $this->redirectToRoute('offer', ['id' => $feedback->offerId]);
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     * @throws \Doctrine\DBAL\Exception
+     */
     #[Route('/offer/{id}/rent', name: 'rent', requirements: ['id' => '\d+'])]
     public function rent(Request $request, int $id): Response
     {
-        $customer = $this->getUser();
+        $user = $this->getUser();
+        $customer = $this->customerRepository->findOneBy(['userIdentifier' => $user->getUserIdentifier()]);
 
         $offer = $this->offerRepository->find($id);
         $this->assertOfferValid($offer);
@@ -163,11 +175,14 @@ class OfferController extends AbstractController
             }
 
             $this->customerDataEditionHandler->handle($rentalDto);
-            $this->rentalCreationHandler->handle($rentalDto);
+            try {
+                $this->rentalCreationHandler->handle($rentalDto);
+            } catch (Exception $e) {
+                $this->addFlash('danger', 'Erreur lors de la sauvegarde de la commande.');
+            }
 
             $this->addFlash('success', 'La location a bien été enregistrée.');
-            // @todo: redirect to 'my rentals' page
-            return $this->redirectToRoute('offer', ['id' => $id]);
+            return $this->redirectToRoute('customer_area_rentals', ['id' => $id]);
         }
 
         return $this->render('offer/rent.html.twig', [
@@ -178,7 +193,7 @@ class OfferController extends AbstractController
         ]);
     }
 
-    private function assertOfferValid(Offer $offer): void
+    private function assertOfferValid(?Offer $offer): void
     {
         if (!$offer) {
             throw $this->createNotFoundException('L\'offre n\'existe pas.');

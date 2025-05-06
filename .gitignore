@@ -24,3 +24,5 @@ yarn-error.log
 ###< symfony/webpack-encore-bundle ###
 
 upload/
+/compose.prod.yaml
+/.env.prod

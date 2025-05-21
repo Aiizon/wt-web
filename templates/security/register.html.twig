@@ -5,8 +5,8 @@
 {% block body %}
     {{ form_errors(form) }}
 
-    <div>
-        <h1 class="h3 mb-3 font-weight-normal">Inscrivez-vous</h1>
+    <div class="d-flex flex-column justify-content-center">
+        <h1 class="h3 mb-3 text-center font-weight-normal">Inscrivez-vous</h1>
         {{ form_start(form) }}
             {{ form_row(form.email) }}
             {{ form_row(form.plainPassword) }}

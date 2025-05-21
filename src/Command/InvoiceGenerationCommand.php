@@ -49,7 +49,6 @@ class InvoiceGenerationCommand extends Command
                 $this->handler->handle($invoice);
                 $output->writeln('Invoice generated for rental ' . $invoice->getRental()->getId());
             } catch (GotenbergApiErrored $e) {
-                dd($e);
                 $output->writeln('An API error occurred while generating the invoice : ' . $e->getMessage());
                 return Command::FAILURE;
             } catch (NoOutputFileInResponse $e) {

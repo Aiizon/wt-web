@@ -88,15 +88,15 @@ class SecurityController extends AbstractController
             $this->entityManager->flush();
 
             // generate a signed url and email it to the user
-            $this->emailVerifier->sendEmailConfirmation('verify_email', $customer,
-                (new TemplatedEmail())
-                    ->from(new Address('noreply@worktogether.fr', 'Automate Work Together'))
-                    ->to((string) $customer->getEmail())
-                    ->subject('Veuillez confirmer votre e-mail')
-                    ->htmlTemplate('security/confirmation_email.html.twig')
-            );
+            //$this->emailVerifier->sendEmailConfirmation('verify_email', $customer,
+            //    (new TemplatedEmail())
+            //        ->from(new Address('noreply@worktogether.fr', 'Automate Work Together'))
+            //        ->to((string) $customer->getEmail())
+            //        ->subject('Veuillez confirmer votre e-mail')
+            //        ->htmlTemplate('security/confirmation_email.html.twig')
+            //);
 
-            $this->addFlash('success', 'Un e-mail de confirmation a été envoyé à votre adresse e-mail. Veuillez le vérifier.');
+            $this->addFlash('success', 'Votre compte a été créé avec succès. Veuillez vous connecter.');
 
             return $this->redirectToRoute('login');
         }

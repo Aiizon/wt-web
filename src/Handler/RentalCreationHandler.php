@@ -43,7 +43,7 @@ class RentalCreationHandler
      */
     public function handle(RentalDto $rentalDto): void
     {
-        for ($i = 0; $i < $rentalDto->quantity - 1; $i++) {
+        for ($i = 0; $i <= $rentalDto->quantity - 1; $i++) {
             $rental = new Rental();
             $rental->setMonthlyRentPrice($rentalDto->offer->getMonthlyRentPrice());
             $rental->setDoRenew($rentalDto->doRenew);
@@ -61,7 +61,7 @@ class RentalCreationHandler
 
             $availableUnits = $this->unitRepository->getAvailableUnitsForRental($rentalDto->offer->getMaxUnits());
 
-            for ($j = 0; $j < $rentalDto->offer->getMaxUnits() - 1; $j++) {
+            for ($j = 0; $j <= $rentalDto->offer->getMaxUnits() - 1; $j++) {
                 $unit = $this->unitRepository->findOneBy(['id' => $availableUnits[$j]]);
 
                 $unit->setIsStarted(true);

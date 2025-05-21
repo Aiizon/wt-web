@@ -143,7 +143,7 @@ class OfferController extends AbstractController
     public function rent(Request $request, int $id): Response
     {
         $user = $this->getUser();
-        $customer = $this->customerRepository->findOneBy(['userIdentifier' => $user->getUserIdentifier()]);
+        $customer = $this->customerRepository->findOneBy(['email' => $user->getUserIdentifier()]);
 
         $offer = $this->offerRepository->find($id);
         $this->assertOfferValid($offer);

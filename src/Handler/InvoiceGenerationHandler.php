@@ -44,7 +44,7 @@ class InvoiceGenerationHandler
      */
     public function handle(Invoice $invoice): void
     {
-        $gotenberg = Gotenberg::chromium('http://127.0.0.1:3000');
+        $gotenberg = Gotenberg::chromium($this->appUrl);
 
         try {
             $html = $this->twig->render('invoice/_invoice.html.twig', [

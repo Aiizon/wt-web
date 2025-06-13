@@ -74,6 +74,9 @@
                                                     <td>
                                                         <a href="{{ path('customer_area_update_unit_config', {'id': unit.id}) }}" class="btn btn-sm btn-info">Configurer</a>
                                                     </td>
+                                                    <td>
+                                                        <a href="{{ path('customer_area_unit_create_intervention', {'id': unit.id}) }}" class="btn btn-sm btn-success">Demander une intervention</a>
+                                                    </td>
                                                 </tr>
                                             {% endfor %}
                                         </tbody>

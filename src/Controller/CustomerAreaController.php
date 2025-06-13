@@ -7,11 +7,14 @@ use App\DTO\UnitsStatsDTO;
 use App\Form\CustomerUpdateType;
 use App\Form\TokenCreationType;
 use App\Form\UnitConfigType;
+use App\Form\UnitInterventionCreateType;
 use App\Repository\CustomerRepository;
 use App\Repository\InvoiceRepository;
 use App\Repository\RentalRepository;
 use App\Repository\TokenRepository;
 use App\Repository\UnitRepository;
+use DateTime;
+use DateTimeImmutable;
 use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Random\RandomException;
@@ -287,6 +290,33 @@ class CustomerAreaController extends AbstractController
         return $this->render('customer_area/unit_config.html.twig', [
             'form' => $form->createView(),
             'unit' => $unit
+        ]);
+    }
+
+    #[Route(path: '/unit/{id}/intervention/create', name: 'customer_area_unit_create_intervention', requirements: ['id' => '\d+'])]
+    public function createIntervention(Request $request, int $id)
+    {
+        $unit = $this->unitRepository->find($id);
+        
+        $form = $this->createForm(UnitInterventionCreateType::class);
+        
+        $form->handleRequest($request);
+        
+        if ($form->isSubmitted() && $form->isValid()) {
+            $intervention = $form->getData();
+            
+            $intervention->setStartDate(new DateTimeImmutable());
+            $intervention->addUnit($unit);
+            
+            $this->entityManager->persist($intervention);
+            $this->entityManager->flush();
+            
+            return $this->redirectToRoute('customer_area_units');
+        }
+        
+        return $this->render('customer_area/unit_intervention_create.html.twig', [
+            'unit' => $unit,
+            'form' => $form,
         ]);
     }
 }

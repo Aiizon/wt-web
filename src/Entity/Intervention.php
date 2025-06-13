@@ -36,6 +36,12 @@ class Intervention
     #[Groups('intervention:read')]
     private Collection $units;
 
+    #[ORM\ManyToOne]
+    private ?Gravity $gravity = null;
+
+    #[ORM\ManyToOne]
+    private ?User $user = null;
+
     public function __construct()
     {
         $this->units = new ArrayCollection();
@@ -105,6 +111,30 @@ class Intervention
         if ($this->units->removeElement($unit)) {
             $unit->removeIntervention($this);
         }
+
+        return $this;
+    }
+
+    public function getGravity(): ?Gravity
+    {
+        return $this->gravity;
+    }
+
+    public function setGravity(?Gravity $gravity): static
+    {
+        $this->gravity = $gravity;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }

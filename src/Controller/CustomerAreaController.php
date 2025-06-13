@@ -337,6 +337,8 @@ class CustomerAreaController extends AbstractController
         
         $interventions = $this->interventionRepository->findInterventionsForUnitAndCustomer($customer, $unit);
         
+        dd($interventions);
+        
         return $this->render('customer_area/unit_interventions.html.twig', [
             'unit'          => $unit,
             'interventions' => $interventions

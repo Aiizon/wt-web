@@ -56,12 +56,16 @@ class InterventionRepository extends ServiceEntityRepository
         $rsm = new ResultSetMappingBuilder($this->getEntityManager());
         $rsm->addRootEntityFromClassMetadata(Intervention::class, 'i');
         $rsm->addJoinedEntityFromClassMetadata(Gravity::class, 'g', 'i', 'gravity', ['id' => 'gravity_id']);
-        $rsm->addJoinedEntityFromClassMetadata(User::class, 'us', 'i', 'user', ['id' => 'user_id']);
-
+        $rsm->addJoinedEntityFromClassMetadata(User::class, 'us', 'i', 'user', [
+            'id'        => 'user_id',
+            'firstName' => 'user_first_name',
+            'lastName'  => 'user_last_name'
+        ]);
+        
         $sql = '
             SELECT i.*, 
                    g.id AS gravity_id, g.name AS name, 
-                   us.id AS user_id, us.first_name AS first_name, us.last_name AS last_name
+                   us.id AS user_id, us.first_name AS user_first_name, us.last_name AS user_last_name
             FROM intervention i
                  INNER JOIN unit_intervention ui ON ui.intervention_id = i.id
                  INNER JOIN unit u ON ui.unit_id = u.id

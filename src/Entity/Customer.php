@@ -13,12 +13,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Table(name: 'customer')]
 class Customer extends User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $firstName = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $lastName = null;
-
     #[ORM\Column(length: 2047, nullable: true)]
     private ?string $address = null;
 

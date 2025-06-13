@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1 class="h1 text-center">Interventions pour l'unité {{ unit.name }}</h1>
+    <table class="table table-striped table-hover table-responsive mb-0">
+        <thead>
+            <tr>
+                <th>Numéro</th>
+                <th>Commentaire</th>
+                <th>Gravité</th>
+                <th>Date de début</th>
+                <th>Date de fin</th>
+                <th>Technicien</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for intervention in interventions %}
+                <tr>
+                    <td>{{ intervention.id }}</td>
+                    <td>{{ intervention.comment }}</td>
+                    <td>
+                        {% if intervention.gravity is not null %}
+                            {{ intervention.gravity.name }}
+                        {% else %}
+                            Non renseignée
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if intervention.startDate is not null %}
+                            {{ intervention.startDate|date('d/m/Y h:i:s') }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if intervention.endDate is not null %}
+                            {{ intervention.endDate|date('d/m/Y h:i:s') }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if intervention.user is not null %}
+                            {# @todo: le nom par défaut ne devrait pas exister, problème de requête #}
+                            {{ intervention.user.firstName ?? "Sans nom" }} {{ intervention.user.lastName ?? "" }}
+                        {% else %}
+                            Non affecté
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a class="align-self-center btn btn-primary" href="{{ path('customer_area_units') }}">Retour</a>
+{% endblock %}

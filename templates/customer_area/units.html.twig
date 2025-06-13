@@ -51,7 +51,7 @@
                                             {% for unit in bayData.units %}
                                                 <tr {% if unit.unitUsage %}style="background-color: {{ unit.unitUsage.color }} !important"{% endif %}>
                                                     <td>{{ unit.id }}</td>
-                                                    <td>{{ unit.name }}, {{ unit.bay.name }} ({{ unit.bay.location }})</td>
+                                                    <td><a class="align-self-center" href="{{ path('customer_area_unit_interventions', {'id': unit.id}) }}">{{ unit.name }}, {{ unit.bay.name }} ({{ unit.bay.location }})</a></td>
                                                     <td>{{ unit.isStarted ? 'Allumée' : 'Eteinte' }}</td>
                                                     <td>
                                                         {% if unit.status == 1 %}

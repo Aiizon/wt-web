@@ -9,11 +9,11 @@ use App\Form\TokenCreationType;
 use App\Form\UnitConfigType;
 use App\Form\UnitInterventionCreateType;
 use App\Repository\CustomerRepository;
+use App\Repository\InterventionRepository;
 use App\Repository\InvoiceRepository;
 use App\Repository\RentalRepository;
 use App\Repository\TokenRepository;
 use App\Repository\UnitRepository;
-use DateTime;
 use DateTimeImmutable;
 use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
@@ -25,7 +25,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\Uuid;
-use function Symfony\Component\DependencyInjection\Loader\Configurator\env;
 
 #[Route('/me')]
 class CustomerAreaController extends AbstractController
@@ -37,6 +36,7 @@ class CustomerAreaController extends AbstractController
     private UnitRepository              $unitRepository;
     private RentalRepository            $rentalRepository;
     private TokenRepository             $tokenRepository;
+    private InterventionRepository      $interventionRepository;
 
     public function __construct
     (
@@ -46,16 +46,18 @@ class CustomerAreaController extends AbstractController
         InvoiceRepository           $invoiceRepository,
         UnitRepository              $unitRepository,
         RentalRepository            $rentalRepository,
-        TokenRepository             $tokenRepository
+        TokenRepository             $tokenRepository,
+        InterventionRepository      $interventionRepository
     )
     {
-        $this->entityManager      = $entityManager;
-        $this->customerRepository = $customerRepository;
-        $this->passwordHasher     = $passwordHasher;
-        $this->invoiceRepository  = $invoiceRepository;
-        $this->unitRepository     = $unitRepository;
-        $this->rentalRepository   = $rentalRepository;
-        $this->tokenRepository    = $tokenRepository;
+        $this->entityManager          = $entityManager;
+        $this->customerRepository     = $customerRepository;
+        $this->passwordHasher         = $passwordHasher;
+        $this->invoiceRepository      = $invoiceRepository;
+        $this->unitRepository         = $unitRepository;
+        $this->rentalRepository       = $rentalRepository;
+        $this->tokenRepository        = $tokenRepository;
+        $this->interventionRepository = $interventionRepository;
     }
 
     #[Route('/', name: 'customer_area_home')]
@@ -317,6 +319,21 @@ class CustomerAreaController extends AbstractController
         return $this->render('customer_area/unit_intervention_create.html.twig', [
             'unit' => $unit,
             'form' => $form,
+        ]);
+    }
+
+    #[Route(path: '/unit/{id}/interventions', name: 'customer_area_unit_interventions', requirements: ['id' => '\d+'])]
+    public function unitInterventions(int $id)
+    {
+        $user     = $this->getUser();
+        $customer = $this->customerRepository->findOneBy(['email' => $user->getUserIdentifier()]);
+        $unit     = $this->unitRepository->find($id);
+        
+        $interventions = $this->interventionRepository->findInterventionsForUnitAndCustomer($customer, $unit);
+        
+        return $this->render('customer_area/unit_interventions.html.twig', [
+            'unit'          => $unit,
+            'interventions' => $interventions
         ]);
     }
 }

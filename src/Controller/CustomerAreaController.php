@@ -329,6 +329,12 @@ class CustomerAreaController extends AbstractController
         $customer = $this->customerRepository->findOneBy(['email' => $user->getUserIdentifier()]);
         $unit     = $this->unitRepository->find($id);
         
+        $rentedUnits = $this->rentalRepository->findActiveUnitsForCustomer($customer);
+        
+        if (!$unit || !in_array($unit, $rentedUnits)) {
+            throw $this->createNotFoundException('Unité non trouvée ou non louée par le client.');
+        }
+        
         $interventions = $this->interventionRepository->findInterventionsForUnitAndCustomer($customer, $unit);
         
         return $this->render('customer_area/unit_interventions.html.twig', [
